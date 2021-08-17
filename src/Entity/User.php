@@ -87,9 +87,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $libraries;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="sender", orphanRemoval=true)
+     */
+    private $sentRequests;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="target", orphanRemoval=true)
+     */
+    private $receivedRequests;
+
     public function __construct()
     {
         $this->libraries = new ArrayCollection();
+        $this->sentRequests = new ArrayCollection();
+        $this->receivedRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -321,6 +333,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($library->getUser() === $this) {
                 $library->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Request[]
+     */
+    public function getSentRequests(): Collection
+    {
+        return $this->sentRequests;
+    }
+
+    public function addSentRequest(Request $sentRequest): self
+    {
+        if (!$this->sentRequests->contains($sentRequest)) {
+            $this->sentRequests[] = $sentRequest;
+            $sentRequest->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSentRequest(Request $sentRequest): self
+    {
+        if ($this->sentRequests->removeElement($sentRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($sentRequest->getSender() === $this) {
+                $sentRequest->setSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Request[]
+     */
+    public function getReceivedRequests(): Collection
+    {
+        return $this->receivedRequests;
+    }
+
+    public function addReceivedRequest(Request $receivedRequest): self
+    {
+        if (!$this->receivedRequests->contains($receivedRequest)) {
+            $this->receivedRequests[] = $receivedRequest;
+            $receivedRequest->setTarget($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedRequest(Request $receivedRequest): self
+    {
+        if ($this->receivedRequests->removeElement($receivedRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($receivedRequest->getTarget() === $this) {
+                $receivedRequest->setTarget(null);
             }
         }
 
