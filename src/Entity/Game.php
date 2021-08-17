@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,16 @@ class Game
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Library::class, mappedBy="game", orphanRemoval=true)
+     */
+    private $libraries;
+
+    public function __construct()
+    {
+        $this->libraries = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,6 +115,36 @@ class Game
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Library[]
+     */
+    public function getLibraries(): Collection
+    {
+        return $this->libraries;
+    }
+
+    public function addLibrary(Library $library): self
+    {
+        if (!$this->libraries->contains($library)) {
+            $this->libraries[] = $library;
+            $library->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLibrary(Library $library): self
+    {
+        if ($this->libraries->removeElement($library)) {
+            // set the owning side to null (unless already changed)
+            if ($library->getGame() === $this) {
+                $library->setGame(null);
+            }
+        }
 
         return $this;
     }

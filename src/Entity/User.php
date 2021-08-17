@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -79,6 +81,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\ManyToOne(targetEntity=Mood::class, inversedBy="users")
      */
     private $mood;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Library::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $libraries;
+
+    public function __construct()
+    {
+        $this->libraries = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -281,6 +293,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setMood(?Mood $mood): self
     {
         $this->mood = $mood;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Library[]
+     */
+    public function getLibraries(): Collection
+    {
+        return $this->libraries;
+    }
+
+    public function addLibrary(Library $library): self
+    {
+        if (!$this->libraries->contains($library)) {
+            $this->libraries[] = $library;
+            $library->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLibrary(Library $library): self
+    {
+        if ($this->libraries->removeElement($library)) {
+            // set the owning side to null (unless already changed)
+            if ($library->getUser() === $this) {
+                $library->setUser(null);
+            }
+        }
 
         return $this;
     }
