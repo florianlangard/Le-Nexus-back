@@ -75,6 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $updatedAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Mood::class, inversedBy="users")
+     */
+    private $mood;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -264,6 +269,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPseudo(string $pseudo) :self
     {
         $this->pseudo = $pseudo;
+
+        return $this;
+    }
+
+    public function getMood(): ?Mood
+    {
+        return $this->mood;
+    }
+
+    public function setMood(?Mood $mood): self
+    {
+        $this->mood = $mood;
 
         return $this;
     }
