@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
@@ -80,16 +81,21 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users", name="api_users_add", methods="POST")
      */
-    public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function add(Request $request, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $jsonContent = $request->getContent();
 
         // dd($request);
 
         $user = $serializer->deserialize($jsonContent, User::class, 'json');
+        // dd($user);
+        $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
+        $user->setPassword($hashedPassword);
+
 
         $errors = $validator->validate($user);
 
+        dump($errors);
         if (count($errors) > 0) {
             // $errorsString = (string) $errors;
             return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);

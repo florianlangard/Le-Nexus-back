@@ -120,7 +120,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sentRequests = new ArrayCollection();
         $this->receivedRequests = new ArrayCollection();
         $this->friends = new ArrayCollection();
-        $this->role = ["ROLE_USER"];
+        $this->roles = ["ROLE_USER"];
         $this->createdAt = new DateTime();
     }
 
@@ -166,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        // $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
