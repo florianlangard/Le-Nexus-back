@@ -97,11 +97,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $receivedRequests;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Friendship::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $friends;
+
     public function __construct()
     {
         $this->libraries = new ArrayCollection();
         $this->sentRequests = new ArrayCollection();
         $this->receivedRequests = new ArrayCollection();
+        $this->friends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -393,6 +399,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($receivedRequest->getTarget() === $this) {
                 $receivedRequest->setTarget(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Friendship[]
+     */
+    public function getFriends(): Collection
+    {
+        return $this->friends;
+    }
+
+    public function addFriend(Friendship $friend): self
+    {
+        if (!$this->friends->contains($friend)) {
+            $this->friends[] = $friend;
+            $friend->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFriend(Friendship $friend): self
+    {
+        if ($this->friends->removeElement($friend)) {
+            // set the owning side to null (unless already changed)
+            if ($friend->getUser() === $this) {
+                $friend->setUser(null);
             }
         }
 
