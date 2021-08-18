@@ -6,6 +6,7 @@ use App\Repository\MoodRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=MoodRepository::class)
@@ -16,11 +17,13 @@ class Mood
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("mood_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Groups("mood_info")
      */
     private $name;
 

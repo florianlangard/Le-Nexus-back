@@ -6,6 +6,7 @@ use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=GameRepository::class)
@@ -16,21 +17,25 @@ class Game
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("game_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("game_info")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("game_info")
      */
     private $picture;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups("game_info")
      */
     private $appid;
 

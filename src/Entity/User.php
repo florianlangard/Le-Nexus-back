@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -18,16 +20,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("user_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups("user_info")
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
+     * @Groups("user_info")
      */
     private $roles = [];
 
@@ -39,31 +44,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=32, unique=true)
+     * @Groups("user_info")
      */
     private $pseudo;
 
     /**
      * @ORM\Column(type="integer", unique=true)
+     * @Groups("user_info")
      */
     private $steamId;
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
+     * @Groups("user_info")
      */
     private $steamUsername;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("user_info")
      */
     private $steamAvatar;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user_info")
      */
     private $visibilityState;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user_info")
      */
     private $isLogged;
 
@@ -79,6 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Mood::class, inversedBy="users")
+     * @Groups("user_info")
      */
     private $mood;
 
@@ -108,6 +120,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sentRequests = new ArrayCollection();
         $this->receivedRequests = new ArrayCollection();
         $this->friends = new ArrayCollection();
+        $this->role = ["ROLE_USER"];
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int

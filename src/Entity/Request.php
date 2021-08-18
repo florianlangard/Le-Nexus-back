@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\RequestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 /**
  * @ORM\Entity(repositoryClass=RequestRepository::class)
@@ -14,21 +16,25 @@ class Request
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("request_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("request_info")
      */
     private $friend;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("request_info")
      */
     private $game;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("request_info")
      */
     private $createdAt;
 
@@ -45,6 +51,7 @@ class Request
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="sentRequests")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("request_info")
      */
     private $sender;
 
