@@ -10,9 +10,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("email")
+ * @UniqueEntity("pseudo")
+ * @UniqueEntity("steamId")
+ * @UniqueEntity("steamUsername")
+ * @UniqueEntity("steamAvatar")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -27,6 +34,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups("user_info")
+     * @Assert\Email
+     * @Assert\NotBlank
      */
     private $email;
 

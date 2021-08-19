@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Constraints\Email;
 
 class UserController extends AbstractController
 {
@@ -98,21 +99,34 @@ class UserController extends AbstractController
         $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
 
         $user->setSteamUsername($userSteamInfos["personaname"]);
+        $user->setSteamAvatar($userSteamInfos["avatarfull"]);
+        $user->setVisibilityState($userSteamInfos["communityvisibilitystate"]);
+        
+        // If the Steam profile is not set to public
+        if (!$user->getVisibilityState()){
+
+            $notice = "votre, compte Steam n'est pas en publique";
+        }
+        // If the Steam profile is public, we search for user's games and user's friends
+        else {
+            $steamApi->fetchGamesInfo($user->getSteamId());
+        }
 
         $errors = $validator->validate($user);
 
-        dump($errors);
         if (count($errors) > 0) {
             // $errorsString = (string) $errors;
             return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         
         $entityManager->persist($user);
-        $entityManager->flush();
+        if($entityManager->flush()){
+            $steamApi->fetchGamesInfo($user->getSteamId());
+        }
 
         // dd($movie);
 
-        return $this->json($user, Response::HTTP_CREATED, ['groups' => 'user_info']);
+        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, ['groups' => 'user_info']);
 
     }
 

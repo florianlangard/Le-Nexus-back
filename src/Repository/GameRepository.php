@@ -19,6 +19,22 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    /**
+     * @return Game[] Returns an array of Game objects
+     */
+    
+    public function findOneByAppid($value): ?Game
+    {
+        return $this->createQueryBuilder('g')
+            ->andWhere('g.appid = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    
+
+
     // /**
     //  * @return Game[] Returns an array of Game objects
     //  */
