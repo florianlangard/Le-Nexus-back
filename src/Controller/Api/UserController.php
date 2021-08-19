@@ -8,6 +8,7 @@ use App\Repository\MoodRepository;
 use App\Repository\UserRepository;
 use App\Repository\RequestRepository;
 use App\Repository\FriendshipRepository;
+use App\Service\steamApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,9 +34,13 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{id<\d+>}", name="api_users_get_item", methods="GET")
      */
-    public function read(User $user): Response
+    public function read(User $user, steamApi $steamApi): Response
     {  
-        return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+        $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
+        dump($userSteamInfos);
+        return $this->json($userSteamInfos, Response::HTTP_OK, [], 
+        // ['groups' => 'user_info']
+    );
     }
 
     /**
@@ -81,17 +86,18 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users", name="api_users_add", methods="POST")
      */
-    public function add(Request $request, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function add(steamApi $steamApi, Request $request, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $jsonContent = $request->getContent();
 
-        // dd($request);
-
         $user = $serializer->deserialize($jsonContent, User::class, 'json');
-        // dd($user);
+        
         $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
         $user->setPassword($hashedPassword);
 
+        $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
+
+        $user->setSteamUsername($userSteamInfos["personaname"]);
 
         $errors = $validator->validate($user);
 

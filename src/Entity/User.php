@@ -49,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $pseudo;
 
     /**
-     * @ORM\Column(type="integer", unique=true)
+     * @ORM\Column(type="bigint", unique=true)
      * @Groups("user_info")
      */
     private $steamId;
