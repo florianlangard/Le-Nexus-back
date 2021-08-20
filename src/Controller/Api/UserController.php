@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Friendship;
 use App\Entity\User;
 use App\Repository\GameRepository;
 use App\Repository\MoodRepository;
@@ -35,11 +36,9 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{id<\d+>}", name="api_users_get_item", methods="GET")
      */
-    public function read(User $user, steamApi $steamApi): Response
+    public function read(User $user): Response
     {  
-        $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
-        dump($userSteamInfos);
-        return $this->json($userSteamInfos, Response::HTTP_OK, [], 
+        return $this->json($user, Response::HTTP_OK, [], 
         // ['groups' => 'user_info']
     );
     }
@@ -109,7 +108,9 @@ class UserController extends AbstractController
         }
         // If the Steam profile is public, we search for user's games and user's friends
         else {
-            $steamApi->fetchGamesInfo($user->getSteamId());
+            // $steamApi->fetchGamesInfo($user->getSteamId());
+            // $steamApi->fetchFriendsInfo($user->getSteamId());
+            $notice = null;
         }
 
         $errors = $validator->validate($user);
@@ -120,11 +121,14 @@ class UserController extends AbstractController
         }
         
         $entityManager->persist($user);
-        if($entityManager->flush()){
+        $entityManager->flush();
+
+        if($notice === null){
             $steamApi->fetchGamesInfo($user->getSteamId());
+            $steamApi->fetchFriendsInfo($user->getSteamId());
         }
 
-        // dd($movie);
+        dd($user);
 
         return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, ['groups' => 'user_info']);
 
@@ -173,15 +177,24 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
      */
-    public function delete(User $user = null, EntityManagerInterface $em)
+    public function delete(User $user = null, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
     {
         if (null === $user) {
-
-            $error = 'Ce film n\'existe pas';
-
+            $error = 'Cet utilisateur n\'existe pas';
             return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
         }
 
+        $friendships = $friendshipRepository->findBy(['user' => $user]);
+        $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
+
+        foreach ($friendships as $currentFriendship) {
+            $em->remove($currentFriendship);
+        }
+
+        foreach ($friendshipsReverse as $currentFriendshipReverse) {
+            $em->remove($currentFriendshipReverse);
+        }
+        
         $em->remove($user);
         $em->flush();
 

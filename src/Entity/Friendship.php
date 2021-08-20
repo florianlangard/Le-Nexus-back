@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\FriendshipRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FriendshipRepository;
 
 /**
  * @ORM\Entity(repositoryClass=FriendshipRepository::class)
@@ -43,6 +44,11 @@ class Friendship
      * @ORM\JoinColumn(nullable=false)
      */
     private $friend;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
 
     public function getId(): ?int
     {

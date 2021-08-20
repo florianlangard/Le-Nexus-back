@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\Friendship;
 use App\Entity\Game;
+use App\Repository\FriendshipRepository;
 use App\Repository\GameRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -11,12 +14,16 @@ class steamApi
 {
     private $client;
     private $gameRepository;
+    private $friendshipRepository;
+    private $userRepository;
     private $em;
 
-    public function __construct(HttpClientInterface $client, GameRepository $gameRepository, EntityManagerInterface $em)
+    public function __construct(HttpClientInterface $client, GameRepository $gameRepository, FriendshipRepository $friendshipRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
         $this->client = $client;
         $this->gameRepository  = $gameRepository;
+        $this->friendshipRepository = $friendshipRepository;
+        $this->userRepository = $userRepository;
         $this->em = $em;
     }
 
@@ -64,8 +71,51 @@ class steamApi
                 $this->em->persist($newGame);
                 $this->em->flush();
             }
-            else{
-                return 'ok';
+            // else{
+            //     return 'ok';
+            // }
+        }
+    }
+
+    public function fetchFriendsInfo($steamId)
+    {
+        $response = $this->client->request(
+            'GET',
+            'https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=8042AD2C22CFB15EE1A668BACFEB5D27&steamid='.$steamId.'&relationship=friend');
+
+        $content = $response->toArray();
+
+        $friends = $content["friendslist"]["friends"];
+
+        // dd($friends);
+        // dd($this->userRepository->findOneBy(['steamId' => $friends[1]['steamid'] ]));
+        foreach($friends as $currentFriend){
+            // dd($this->userRepository->findOneBy(['id' => $currentFriend['steamid'] ]));
+            if ($this->userRepository->findOneBy(['steamId' => $currentFriend['steamid'] ]) != null ){
+
+                // dd('hiufhviudhe');
+                $actualUser   = $this->userRepository->findOneBy(['steamId' => $steamId]);
+                $hisNewFriend = $this->userRepository->findOneBy(['steamId' => $currentFriend['steamid']]);
+
+                // dd($actualUser);
+                // dd($hisNewFriend);
+
+                $newFriendship = new Friendship();
+                $newFriendship
+                ->setFriend($actualUser)
+                ->setUser($hisNewFriend);
+                $this->em->persist($newFriendship);
+
+                $newFriendshipReverse = new Friendship();
+                $newFriendshipReverse
+                ->setFriend($hisNewFriend)
+                ->setUser($actualUser);
+                $this->em->persist($newFriendshipReverse);
+
+                $hisNewFriend->addFriend($newFriendship);
+                $actualUser->addFriend($newFriendshipReverse);
+                               
+                $this->em->flush();
             }
         }
     }
