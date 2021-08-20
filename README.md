@@ -27,6 +27,8 @@ Lancer successivement les commandes:
 
 ```bin/console d:m:m```
 
+```bin/console lexik:jwt:generate-keypair```
+
 le projet back est prêt, ne reste qu'à lancer un serveur de développement:
 
 ```php -S localhost:8000 -t public```
