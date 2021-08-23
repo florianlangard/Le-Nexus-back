@@ -112,8 +112,8 @@ class steamApi
                 ->setUser($actualUser);
                 $this->em->persist($newFriendshipReverse);
 
-                $hisNewFriend->addFriend($newFriendship);
-                $actualUser->addFriend($newFriendshipReverse);
+                // $hisNewFriend->addFriend($newFriendship);
+                // $actualUser->addFriend($newFriendshipReverse);
                                
                 $this->em->flush();
             }
