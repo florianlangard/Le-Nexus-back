@@ -10,7 +10,7 @@ class AuthenticationSuccessListener
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
         // $data = $event->getData(); yields $data['token'] = <the token>
-        $authenticatedUserId = $event->getUser()->getSteamId();
+        $authenticatedUserId = strval($event->getUser()->getSteamId());
         // $person_id = $authenticatedUser->getSteamId();
         // dd($authenticatedUserId);
         // $person_id = $person->getId();

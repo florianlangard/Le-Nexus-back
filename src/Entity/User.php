@@ -58,8 +58,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $pseudo;
 
     /**
-     * @ORM\Column(type="bigint", unique=true)
+     * @ORM\Column(type="string", length=17, unique=true)
      * @Groups("user_info")
+     * @Assert\Length( min=17, max=17)
+     * @Assert\Regex("/^\d+/")
+     * @Assert\NotBlank
      */
     private $steamId;
 
@@ -131,6 +134,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->friends = new ArrayCollection();
         $this->roles = ["ROLE_USER"];
         $this->createdAt = new DateTime();
+    }
+
+    public function __toString()
+    {
+        return strval($this->steamId);
     }
 
     public function getId(): ?int
