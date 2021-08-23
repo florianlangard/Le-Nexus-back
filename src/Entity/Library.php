@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\LibraryRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=LibraryRepository::class)
@@ -19,16 +21,19 @@ class Library
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user_info")
      */
     private $installed;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user_info")
      */
     private $hidden;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("user_info")
      */
     private $createdAt;
 
@@ -40,6 +45,7 @@ class Library
     /**
      * @ORM\ManyToOne(targetEntity=Game::class, inversedBy="libraries")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("user_info")
      */
     private $game;
 
@@ -48,6 +54,13 @@ class Library
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->installed = true;
+        $this->hidden = false;
+    }
 
     public function getId(): ?int
     {

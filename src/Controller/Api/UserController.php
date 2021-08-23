@@ -38,9 +38,7 @@ class UserController extends AbstractController
      */
     public function read(User $user): Response
     {  
-        return $this->json($user, Response::HTTP_OK, [], 
-        // ['groups' => 'user_info']
-    );
+        return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
     }
 
     /**
