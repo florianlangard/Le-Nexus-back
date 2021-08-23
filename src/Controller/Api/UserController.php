@@ -34,7 +34,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/{id<\d+>}", name="api_users_get_item", methods="GET")
+     * @Route("/api/users/{steamId<\d+>}", name="api_users_get_item", methods="GET")
      */
     public function read(User $user): Response
     {  
@@ -64,7 +64,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/{id<\d+>}/friends", name="api_users_get_friends", methods="GET")
+     * @Route("/api/users/{steamId<\d+>}/friends", name="api_users_get_friends", methods="GET")
      */
     public function readFriendsByUser(User $user, FriendshipRepository $friendshipRepository): Response
     {
@@ -128,7 +128,7 @@ class UserController extends AbstractController
             $steamApi->fetchFriendsInfo($user->getSteamId());
         }
 
-        dd($user);
+        // dd($user);
 
         return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, ['groups' => 'user_info']);
 
