@@ -4,8 +4,10 @@ namespace App\Service;
 
 use App\Entity\Friendship;
 use App\Entity\Game;
+use App\Entity\Library;
 use App\Repository\FriendshipRepository;
 use App\Repository\GameRepository;
+use App\Repository\LibraryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -16,12 +18,14 @@ class steamApi
     private $gameRepository;
     private $friendshipRepository;
     private $userRepository;
+    private $libraryRepository;
     private $em;
 
-    public function __construct(HttpClientInterface $client, GameRepository $gameRepository, FriendshipRepository $friendshipRepository, UserRepository $userRepository, EntityManagerInterface $em)
+    public function __construct(HttpClientInterface $client, LibraryRepository $libraryRepository, GameRepository $gameRepository, FriendshipRepository $friendshipRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
         $this->client = $client;
         $this->gameRepository  = $gameRepository;
+        $this->libraryRepository = $libraryRepository;
         $this->friendshipRepository = $friendshipRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
@@ -69,6 +73,15 @@ class steamApi
                 ->setPicture($curentGamePictureUrl);
 
                 $this->em->persist($newGame);
+
+                $newLibrary = new Library();
+
+                $newLibrary
+                ->setUser($this->userRepository->findOneBy(['steamId' => $steamId]))
+                ->setGame($newGame);
+
+                $this->em->persist($newLibrary);
+
                 $this->em->flush();
             }
             // else{

@@ -19,24 +19,28 @@ class Game
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups("game_info")
+     * @Groups("user_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("game_info")
+     * @Groups("user_info")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("game_info")
+     * @Groups("user_info")
      */
     private $picture;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups("game_info")
+     * @Groups("user_info")
      */
     private $appid;
 
