@@ -33,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user_info", "request_info"})
+     * @Groups("user_info")
      * @Assert\Email
      * @Assert\NotBlank
      */
@@ -41,14 +41,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user_info", "request_info"})
+     * @Groups("user_info")
      */
     private $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * @Groups({"user_info", "request_info"})
+     * @Groups("user_info")
      */
     private $password;
 
@@ -93,7 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user_info", "request_info"})
+     * @Groups("user_info")
      */
     private $createdAt;
 

@@ -60,7 +60,7 @@ class RequestController extends AbstractController
         $em->persist($newRequest);
         // dd($userRequest);
         $em->flush();
-        
-        return $this->json($newRequest, Response::HTTP_CREATED, ['groups' => 'request_info']);
+        // dd($newRequest);
+        return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
     }
 }

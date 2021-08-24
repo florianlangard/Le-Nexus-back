@@ -6,6 +6,7 @@ use App\Repository\RequestRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 
 /**
@@ -52,6 +53,7 @@ class Request
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="sentRequests")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("request_info")
      */
     private $sender;
 
