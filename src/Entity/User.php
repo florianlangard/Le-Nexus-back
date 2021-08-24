@@ -126,6 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Friendship::class, mappedBy="user", orphanRemoval=true)
+     * @Groups("user_info")
      */
     private $friends;
 

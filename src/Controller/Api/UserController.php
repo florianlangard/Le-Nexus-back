@@ -2,24 +2,25 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Friendship;
 use App\Entity\User;
+use App\Service\steamApi;
+use App\Entity\Friendship;
 use App\Repository\GameRepository;
 use App\Repository\MoodRepository;
 use App\Repository\UserRepository;
 use App\Repository\RequestRepository;
 use App\Repository\FriendshipRepository;
-use App\Service\steamApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Validator\Constraints\Email;
 
 class UserController extends AbstractController
 {
@@ -41,15 +42,15 @@ class UserController extends AbstractController
         return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
     }
 
-    /**
-     * @Route("/api/users/{id<\d+>}/games", name="api_users_get_games", methods="GET")
-     */
-    public function readGamesByUser(User $user, GameRepository $gameRepository): Response
-    {
-        $games = $gameRepository->findBy($user);
+    // /**
+    //  * @Route("/api/users/{id<\d+>}/games", name="api_users_get_games", methods="GET")
+    //  */
+    // public function readGamesByUser(User $user, GameRepository $gameRepository): Response
+    // {
+    //     $games = $gameRepository->findBy($user);
        
-        return $this->json($games, Response::HTTP_OK, [], ['groups' => 'game_info']);
-    }
+    //     return $this->json($games, Response::HTTP_OK, [], ['groups' => 'game_info']);
+    // }
 
     /**
      * @Route("/api/users/{id<\d+>}/mood", name="api_users_get_mood", methods="GET")
@@ -64,9 +65,14 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{steamId<\d+>}/friends", name="api_users_get_friends", methods="GET")
      */
-    public function readFriendsByUser(User $user, FriendshipRepository $friendshipRepository): Response
+    public function readFriendsByUser(User $user, UserRepository $userRepository): Response
     {
-        $friends = $friendshipRepository->findBy($user);
+        $friends = [];
+
+        foreach ($user->getFriends() as $currentFriendship){
+            $friend = $userRepository->find($currentFriendship->getFriend());
+            $friends[] = $friend;
+        }
        
         return $this->json($friends, Response::HTTP_OK, [], ['groups' => 'user_info']);
     }
@@ -128,7 +134,7 @@ class UserController extends AbstractController
 
         // dd($user);
 
-        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, ['groups' => 'user_info']);
+        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
 
     }
 
