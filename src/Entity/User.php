@@ -107,8 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $mood;
 
     /**
-     * @ORM\OneToMany(targetEntity=Library::class, mappedBy="user", orphanRemoval=true)
-     * @Groups("user_info")
+     * @ORM\OneToMany(targetEntity=Library::class, mappedBy="user", orphanRemoval=true)s
      */
     private $libraries;
 
@@ -124,6 +123,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Friendship::class, mappedBy="user", orphanRemoval=true)
+     * @Groups({"user_info", "user_friends"})
      */
     private $friends;
 

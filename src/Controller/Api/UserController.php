@@ -128,7 +128,7 @@ class UserController extends AbstractController
 
         // dd($user);
 
-        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, ['groups' => 'user_info']);
+        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
 
     }
 
