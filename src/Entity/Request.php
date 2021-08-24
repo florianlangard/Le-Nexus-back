@@ -52,13 +52,13 @@ class Request
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="sentRequests")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups("request_info")
      */
     private $sender;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="receivedRequests")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("request_info")
      */
     private $target;
 

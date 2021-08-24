@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Entity\Request as EntityRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,31 +27,40 @@ class RequestController extends AbstractController
     }
 
     /**
-     * @Route("/api/request/{targetId}/friend", name="api_request_send", methods={"POST"})
+     * @Route("/api/request", name="api_request_send", methods={"POST"})
      */
-    public function sendFriendRequest(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository,User $user): Response
+    public function sendFriendRequest(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
         $user = $this->getUser();
-        $target = 
-        dd($user);
+        // $sender = $serializer->deserialize($user, User::class, 'json');
+         
+        // dd($sender);
 
 
-        // $jsonContent = $request->getContent();
-        // // dd($jsonContent);
+        $jsonContent = $request->toArray();
+        // dd($jsonContent);
+        $newRequest = new EntityRequest();
+        $newRequest->setSender($userRepository->find($jsonContent['sender']));
+        $newRequest->setTarget($userRepository->find($jsonContent['target']));
+        $newRequest->setFriend($jsonContent['friend']);
+        $newRequest->setGame($jsonContent['game']);
+        // dd($newRequest);
         // $userRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
-        // $errors = $validator->validate($userRequest);
+
+
+        $errors = $validator->validate($newRequest);
         
-        // if (count($errors) > 0) {
-        //     // Convertit la variable en chaîne
-        //     $errorsString = (string) $errors;
+        if (count($errors) > 0) {
+            // Convertit la variable en chaîne
+            $errorsString = (string) $errors;
             
-        //     // return new Response($errorsString);
-        //     return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
-        // }
-        // $em->persist($userRequest);
-        // // dd($userRequest);
-        // $em->flush($userRequest);
+            // return new Response($errorsString);
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $em->persist($newRequest);
+        // dd($userRequest);
+        $em->flush();
         
-        // return $this->json($userRequest, Response::HTTP_CREATED, ['groups' => 'request_info']);
+        return $this->json($newRequest, Response::HTTP_CREATED, ['groups' => 'request_info']);
     }
 }
