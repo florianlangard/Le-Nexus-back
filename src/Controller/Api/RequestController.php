@@ -29,7 +29,7 @@ class RequestController extends AbstractController
     /**
      * @Route("/api/request", name="api_request_send", methods={"POST"})
      */
-    public function sendFriendRequest(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
+    public function sendRequest(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
         $user = $this->getUser();
         // $sender = $serializer->deserialize($user, User::class, 'json');
