@@ -27,7 +27,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $id;
 
@@ -48,18 +48,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups("user_info")
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=32, unique=true)
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $pseudo;
 
     /**
      * @ORM\Column(type="string", length=17, unique=true)
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      * @Assert\Length( min=17, max=17)
      * @Assert\Regex("/^\d+/")
      * @Assert\NotBlank
@@ -68,30 +69,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $steamUsername;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $steamAvatar;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $visibilityState;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups("user_info")
+     * @Groups({"user_info", "request_info"})
      */
     private $isLogged;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("user_info")
      */
     private $createdAt;
 
