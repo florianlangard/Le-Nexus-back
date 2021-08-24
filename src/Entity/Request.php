@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RequestRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -60,6 +61,11 @@ class Request
      * @ORM\JoinColumn(nullable=false)
      */
     private $target;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
 
     public function getId(): ?int
     {
