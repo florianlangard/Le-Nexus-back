@@ -170,7 +170,7 @@ class UserController extends AbstractController
 
         // dd($movie);
 
-        return $this->json($userUpdated, Response::HTTP_ACCEPTED, ['groups' => 'movies_get']);
+        return $this->json($userUpdated, Response::HTTP_ACCEPTED, [],  ['groups' => 'user_info']);
         // return $this->redirectToRoute('api_movies_get_item', ['id' => $movieUpdated->getId()], Response::HTTP_ACCEPTED);
 
         // @todo Conditionner le message de retour au cas où
