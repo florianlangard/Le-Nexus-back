@@ -35,36 +35,20 @@ class RequestController extends AbstractController
      */
     public function sendRequest(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
-        // $user = $this->getUser();
-        // $sender = $serializer->deserialize($user, User::class, 'json');
-         
-        // dd($sender);
+        $jsonContent = $request->getContent();
 
-
-        $jsonContent = $request->toArray();
-        // dd($jsonContent);
-        $newRequest = new EntityRequest();
-        $newRequest->setSender($userRepository->find($jsonContent['sender']));
-        $newRequest->setTarget($userRepository->find($jsonContent['target']));
-        $newRequest->setFriend($jsonContent['friend']);
-        $newRequest->setGame($jsonContent['game']);
-        // dd($newRequest);
-        // $userRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
-
+        $newRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
 
         $errors = $validator->validate($newRequest);
         
         if (count($errors) > 0) {
-            // Convertit la variable en chaîne
             $errorsString = (string) $errors;
             
-            // return new Response($errorsString);
             return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $em->persist($newRequest);
-        // dd($userRequest);
         $em->flush();
-        // dd($newRequest);
+
         return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
     }
 
@@ -91,11 +75,11 @@ class RequestController extends AbstractController
 
         $em->flush();
         // dd($updatedRequest);
-        if($entityRequest->getGame()) {
+        if($entityRequest->getType() === "game") {
             $updatedFriendship = $responseHandler->handleGameRequest($updatedRequest);
             return $this->json($updatedFriendship, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
         }
-        if ($entityRequest->getFriend()) {
+        if($entityRequest->getType() === "friend") {
             $newFriendship = $responseHandler->handleFriendRequest($updatedRequest);
             return $this->json($newFriendship, Response::HTTP_CREATED, [], ['groups' => 'user_info']);
         }

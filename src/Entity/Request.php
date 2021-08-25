@@ -6,7 +6,8 @@ use App\Repository\RequestRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 /**
@@ -23,16 +24,11 @@ class Request
     private $id;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string")
      * @Groups("request_info")
+     * @Assert\Choice({"friend", "game"})
      */
-    private $friend;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("request_info")
-     */
-    private $game;
+    private $type;
 
     /**
      * @ORM\Column(type="datetime")
@@ -66,6 +62,12 @@ class Request
      */
     private $target;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Game::class)
+     * @Groups("request_info")
+     */
+    private $game;
+
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -74,30 +76,6 @@ class Request
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFriend(): ?bool
-    {
-        return $this->friend;
-    }
-
-    public function setFriend(bool $friend): self
-    {
-        $this->friend = $friend;
-
-        return $this;
-    }
-
-    public function getGame(): ?bool
-    {
-        return $this->game;
-    }
-
-    public function setGame(bool $game): self
-    {
-        $this->game = $game;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -156,6 +134,30 @@ class Request
     public function setTarget(?User $target): self
     {
         $this->target = $target;
+
+        return $this;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getGame(): ?Game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?Game $game): self
+    {
+        $this->game = $game;
 
         return $this;
     }

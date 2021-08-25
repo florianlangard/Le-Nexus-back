@@ -18,39 +18,41 @@ class Game
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("game_info")
+     * @Groups("request_info")
      * @Groups("user_info")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("game_info")
+     * @Groups("request_info")
      * @Groups("user_info")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("game_info")
+     * @Groups("request_info")
      * @Groups("user_info")
      */
     private $picture;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups("game_info")
+     * @Groups("request_info")
      * @Groups("user_info")
      */
     private $appid;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("request_info")
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("request_info")
      */
     private $updatedAt;
 
