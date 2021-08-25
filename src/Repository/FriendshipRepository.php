@@ -19,6 +19,18 @@ class FriendshipRepository extends ServiceEntityRepository
         parent::__construct($registry, Friendship::class);
     }
 
+    public function findOneByUserAndFriend($user, $friend): ?Friendship
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.user = :user')
+            ->andWhere('f.friend = :friend')
+            ->setParameter('user', $user)
+            ->setParameter('friend', $friend)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return Friendship[] Returns an array of Friendship objects
     //  */

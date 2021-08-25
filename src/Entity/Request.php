@@ -42,11 +42,13 @@ class Request
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("request_info")
      */
     private $acceptedAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("request_info")
      */
     private $declinedAt;
 

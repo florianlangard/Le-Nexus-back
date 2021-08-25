@@ -118,7 +118,8 @@ class steamApi
         // dd($this->userRepository->findOneBy(['steamId' => $friends[1]['steamid'] ]));
         foreach($friends as $currentFriend){
             // dd($this->userRepository->findOneBy(['id' => $currentFriend['steamid'] ]));
-            if ($this->userRepository->findOneBy(['steamId' => $currentFriend['steamid'] ]) != null ){
+            
+            if ($this->userRepository->findOneBy(['steamId' => $currentFriend['steamid'] ]) && !$this->friendshipRepository->findOneByUserAndFriend($this->userRepository->findOneBy(['steamId' => $steamId]), $this->userRepository->findOneBy(['steamId' => $currentFriend['steamid']]))) {
 
                 // dd('hiufhviudhe');
                 $actualUser   = $this->userRepository->findOneBy(['steamId' => $steamId]);
