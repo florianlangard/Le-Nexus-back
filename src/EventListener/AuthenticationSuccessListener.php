@@ -2,11 +2,19 @@
 
 namespace App\EventListener;
 
-use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use App\Entity\User;
+use App\Service\steamApi;
+use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 
 class AuthenticationSuccessListener
 {
+    private $steamApi;
+
+    public function __construct(steamApi $steamApi)
+    {
+        $this->steamApi = $steamApi;
+    }
+
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
         // $data = $event->getData(); yields $data['token'] = <the token>
@@ -15,6 +23,8 @@ class AuthenticationSuccessListener
         // dd($authenticatedUserId);
         // $person_id = $person->getId();
 
+        $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
+        $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
 
         $event->setData([
             // 'code' => $event->getResponse()->getStatusCode(),

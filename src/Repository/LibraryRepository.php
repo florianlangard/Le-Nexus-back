@@ -19,6 +19,18 @@ class LibraryRepository extends ServiceEntityRepository
         parent::__construct($registry, Library::class);
     }
 
+    public function findOneByGameAndUser($game, $user): ?Library
+    {
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.user = :user')
+            ->andWhere('l.game = :game')
+            ->setParameter('user', $user)
+            ->setParameter('game', $game)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return Library[] Returns an array of Library objects
     //  */

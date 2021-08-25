@@ -51,6 +51,7 @@ class steamApi
         return $content;
     }
     
+    // TODO : creer des variables user et games pour simplifier les paramètres 
     public function fetchGamesInfo(string $steamId)
     {
         $response = $this->client->request(
@@ -79,6 +80,19 @@ class steamApi
                 $newLibrary
                 ->setUser($this->userRepository->findOneBy(['steamId' => $steamId]))
                 ->setGame($newGame);
+
+                $this->em->persist($newLibrary);
+
+                $this->em->flush();
+            }
+
+            if (!$this->libraryRepository->findOneByGameAndUser($this->gameRepository->findOneBy(['appid' => $currentGame['appid']]), $this->userRepository->findOneBy(['steamId' => $steamId]))) {
+               
+                $newLibrary = new Library();
+
+                $newLibrary
+                ->setUser($this->userRepository->findOneBy(['steamId' => $steamId]))
+                ->setGame($this->gameRepository->findOneBy(['appid' => $currentGame['appid']]));
 
                 $this->em->persist($newLibrary);
 
