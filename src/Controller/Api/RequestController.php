@@ -95,9 +95,9 @@ class RequestController extends AbstractController
             $updatedFriendship = $responseHandler->handleGameRequest($updatedRequest);
             return $this->json($updatedFriendship, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
         }
-
-        // @todo Conditionner le message de retour au cas où
-        // l'entité ne serait pas modifiée
-        return $this->json($updatedRequest, Response::HTTP_ACCEPTED, [], ['groups' => 'request_info']);
+        if ($entityRequest->getFriend()) {
+            $newFriendship = $responseHandler->handleFriendRequest($updatedRequest);
+            return $this->json($newFriendship, Response::HTTP_CREATED, [], ['groups' => 'user_info']);
+        }
     }
 }
