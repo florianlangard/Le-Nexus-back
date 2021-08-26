@@ -19,16 +19,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RequestController extends AbstractController
 {
-    /**
-     * @Route("/request", name="request")
-     */
-    public function index(): Response
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/RequestController.php',
-        ]);
-    }
 
     /**
      * @Route("/api/request", name="api_request_send", methods={"POST"})

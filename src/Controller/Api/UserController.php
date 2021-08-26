@@ -188,12 +188,7 @@ class UserController extends AbstractController
             return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
         }
 
-        $friendships = $friendshipRepository->findBy(['user' => $user]);
         $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
-
-        foreach ($friendships as $currentFriendship) {
-            $em->remove($currentFriendship);
-        }
 
         foreach ($friendshipsReverse as $currentFriendshipReverse) {
             $em->remove($currentFriendshipReverse);
