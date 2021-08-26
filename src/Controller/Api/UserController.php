@@ -35,6 +35,16 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/api/users/{searching}", name="api_users_get_collection", methods="GET")
+     */
+    public function browseUsersByPartOfPseudo($searching, UserRepository $userRepository): Response
+    {  
+        $users = $userRepository->findByPartOfPseudo($searching);
+
+        return $this->json($users, Response::HTTP_OK, [], ['groups' => 'user_info']);
+    }
+
+    /**
      * @Route("/api/users/{steamId<\d+>}", name="api_users_get_item", methods="GET")
      */
     public function read(User $user): Response
