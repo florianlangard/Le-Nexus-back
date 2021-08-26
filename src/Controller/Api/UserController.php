@@ -151,7 +151,7 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{steamId<\d+>}", name="api_users_patch", methods={"PATCH", "PUT"})
      */
-    public function patch(Request $request, User $user = null, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function patch(Request $request, User $user = null, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         if ($user === null) {
             return $this->json(['message' => 'utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
@@ -160,11 +160,17 @@ class UserController extends AbstractController
         $jsonContent = $request->getContent();
 
         $userUpdated = $serializer->deserialize($jsonContent, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
+        
+        $content = $request->toArray();
+  
+        if ($content['password']) {
+            $hashedPassword = $userPasswordHasher->hashPassword($userUpdated, $userUpdated->getPassword());
+            $userUpdated->setPassword($hashedPassword);
+        }
 
         $errors = $validator->validate($userUpdated);
 
         if (count($errors) > 0) {
-            // $errorsString = (string) $errors;
 
             $newErrors = [];
 
@@ -177,8 +183,6 @@ class UserController extends AbstractController
         
         $entityManager->persist($userUpdated);
         $entityManager->flush();
-
-        // dd($movie);
 
         return $this->json($userUpdated, Response::HTTP_ACCEPTED, [],  ['groups' => 'user_info']);
         // return $this->redirectToRoute('api_movies_get_item', ['id' => $movieUpdated->getId()], Response::HTTP_ACCEPTED);
