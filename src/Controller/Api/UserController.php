@@ -149,7 +149,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/{id<\d+>}", name="api_users_patch", methods={"PATCH", "PUT"})
+     * @Route("/api/users/{steamId<\d+>}", name="api_users_patch", methods={"PATCH", "PUT"})
      */
     public function patch(Request $request, User $user = null, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
