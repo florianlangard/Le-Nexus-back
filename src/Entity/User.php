@@ -18,8 +18,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("email")
  * @UniqueEntity("pseudo")
  * @UniqueEntity("steamId")
- * @UniqueEntity("steamUsername")
- * @UniqueEntity("steamAvatar")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -55,6 +53,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=32, unique=true)
      * @Groups({"user_info", "request_info"})
+     * @Assert\NotBlank
+     * @Assert\Length( min=1, max=32)
      */
     private $pseudo;
 
@@ -68,13 +68,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $steamId;
 
     /**
-     * @ORM\Column(type="string", length=64, unique=true)
+     * @ORM\Column(type="string", length=64)
      * @Groups({"user_info", "request_info"})
      */
     private $steamUsername;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Groups({"user_info", "request_info"})
      */
     private $steamAvatar;
