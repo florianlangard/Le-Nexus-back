@@ -35,7 +35,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/{searching}", name="api_users_get_collection", methods="GET")
+     * @Route("/api/user/pseudo/{searching}", name="api_users_get_collection", methods="GET")
      */
     public function browseUsersByPartOfPseudo($searching, UserRepository $userRepository): Response
     {  
