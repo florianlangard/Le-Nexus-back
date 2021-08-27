@@ -25,6 +25,7 @@ class AuthenticationSuccessListener
 
         $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
         $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
+        $this->steamApi->fetchUserInfo(strval($event->getUser()->getSteamId()));
 
         $event->setData([
             // 'code' => $event->getResponse()->getStatusCode(),

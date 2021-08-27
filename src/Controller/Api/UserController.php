@@ -35,7 +35,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/user/pseudo/{searching}", name="api_users_get_collection", methods="GET")
+     * @Route("/api/users/pseudo/{searching}", name="api_users_get_collection", methods="GET")
      */
     public function browseUsersByPartOfPseudo($searching, UserRepository $userRepository): Response
     {  
@@ -49,7 +49,15 @@ class UserController extends AbstractController
      */
     public function read(User $user): Response
     {  
-        return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+        foreach ($this->getUser()->getFriends() as $currentFriendship) {
+
+            $currentfriend = $currentFriendship->getFriend();
+
+            if ($user === $this->getUser() || $user === $currentfriend) {
+                return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+            }
+            return $this->json([], Response::HTTP_FORBIDDEN);
+        }
     }
 
     // /**
@@ -195,22 +203,46 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
      */
-    public function delete(User $user = null, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
+    public function delete(User $user, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
     {
-        if (null === $user) {
-            $error = 'Cet utilisateur n\'existe pas';
-            return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
-        }
-
-        $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
-
-        foreach ($friendshipsReverse as $currentFriendshipReverse) {
-            $em->remove($currentFriendshipReverse);
+        if ($user === $this->getUser()) {
+            
+            
+            $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
+            
+            foreach ($friendshipsReverse as $currentFriendshipReverse) {
+                $em->remove($currentFriendshipReverse);
+            }
+            
+            $em->remove($user);
+            $em->flush();
+            
+            return $this->json(['message' => 'L\'utilisateur a bien été supprimé.'], Response::HTTP_OK);
         }
         
-        $em->remove($user);
-        $em->flush();
+        return $this->json([], Response::HTTP_FORBIDDEN);
 
-        return $this->json(['message' => 'L\'utilisateur a bien été supprimé.'], Response::HTTP_OK);
     }
+
+    // /**
+    //  * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
+    //  */
+    // public function delete(User $user = null, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
+    // {
+    //     if (null === $user) {
+    //         $error = 'Cet utilisateur n\'existe pas';
+    //         return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
+    //     }
+
+    //     $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
+
+    //     foreach ($friendshipsReverse as $currentFriendshipReverse) {
+    //         $em->remove($currentFriendshipReverse);
+    //     }
+        
+    //     $em->remove($user);
+    //     $em->flush();
+
+    //     return $this->json(['message' => 'L\'utilisateur a bien été supprimé.'], Response::HTTP_OK);
+    // }
 }
