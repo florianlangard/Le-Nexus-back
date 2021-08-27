@@ -131,14 +131,14 @@ class UserController extends AbstractController
         $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
         $user->setPassword($hashedPassword);
 
-        $userWithSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
+        $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
 
-        // $user->setSteamUsername($userSteamInfos["personaname"]);
-        // $user->setSteamAvatar($userSteamInfos["avatarfull"]);
-        // $user->setVisibilityState($userSteamInfos["communityvisibilitystate"]);
+        $user->setSteamUsername($userSteamInfos["personaname"]);
+        $user->setSteamAvatar($userSteamInfos["avatarfull"]);
+        $user->setVisibilityState($userSteamInfos["communityvisibilitystate"]);
         
         // If the Steam profile is not set to public
-        if (!$userWithSteamInfos->getVisibilityState()){
+        if (!$user->getVisibilityState()){
 
             $notice = "votre, compte Steam n'est pas en publique";
         }
@@ -149,25 +149,24 @@ class UserController extends AbstractController
             $notice = null;
         }
 
-        $errors = $validator->validate($userWithSteamInfos);
+        $errors = $validator->validate($user);
 
         if (count($errors) > 0) {
             // $errorsString = (string) $errors;
             return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         
-        $entityManager->persist($userWithSteamInfos);
+        $entityManager->persist($user);
         $entityManager->flush();
 
         if($notice === null){
-            $steamApi->fetchGamesInfo($userWithSteamInfos->getSteamId());
-            $steamApi->fetchFriendsInfo($userWithSteamInfos->getSteamId());
+            $steamApi->fetchGamesInfo($user->getSteamId());
+            $steamApi->fetchFriendsInfo($user->getSteamId());
         }
 
         // dd($user);
 
-        return $this->json(['user' => $userWithSteamInfos, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
-
+        return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
     }
 
     /**

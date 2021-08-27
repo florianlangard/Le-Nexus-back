@@ -44,15 +44,27 @@ class RequestController extends AbstractController
 
         } elseif ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'game') {
 
+            // // If the user connected as in his frendslist the user set in the target property of the request
+            // if ($this->getUser()->getFriends()->findOneByUserAndFriend($this->getUser(), $newRequest->getSender())) {
+
+            //     // If the user connected has not the game in his library
+            //     if (!$this->getUser()->getLibraries()->findOneByGameAndUser($newRequest->getGame(), $this->getUser())) {
+            //         return $this->json('You must have these game in your library to send an invitation', Response::HTTP_FORBIDDEN);
+            //     }
+            //     // If the target of the request has not the game in his library
+            //     if (!$newRequest->getTarget()->getLibraries()->findOneByGameAndUser($newRequest->getGame(), $newRequest->getTarget())) {
+            //         return $this->json('You friend must have these game in your library to send an invitation', Response::HTTP_FORBIDDEN);
+                
+            
+
             foreach ($this->getUser()->getFriends() as $currentFriendship) {
 
                 $currentfriend = $currentFriendship->getFriend();
     
                 if ($newRequest->getTarget() === $currentfriend) {
 
-                    
-                    $errors = $validator->validate($newRequest);
-        
+                $errors = $validator->validate($newRequest);
+    
                     if (count($errors) > 0) {
                         $errorsString = (string) $errors;
                     
@@ -63,7 +75,6 @@ class RequestController extends AbstractController
         
                     return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
                 }
-                
             }
         }
         
@@ -105,8 +116,6 @@ class RequestController extends AbstractController
             }
         }
 
-        return $this->json([], Response::HTTP_FORBIDDEN);
-
-        
+        return $this->json([], Response::HTTP_FORBIDDEN);      
     }
 }

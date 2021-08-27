@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Friendship;
 use App\Entity\Game;
 use App\Entity\Library;
-use App\Entity\User;
 use App\Repository\FriendshipRepository;
 use App\Repository\GameRepository;
 use App\Repository\LibraryRepository;
@@ -32,7 +31,7 @@ class steamApi
         $this->em = $em;
     }
 
-    public function fetchUserInfo(string $steamId): User
+    public function fetchUserInfo(string $steamId): array
     {
         $response = $this->client->request(
             'GET',
@@ -49,14 +48,7 @@ class steamApi
             $content["communityvisibilitystate"] = false;
         }
 
-        $user = $this->userRepository->findOneBy(['steamId' => $steamId]);
-
-        $user
-        ->setSteamUsername($content["personaname"])
-        ->setSteamAvatar($content["avatarfull"])
-        ->setVisibilityState($content["communityvisibilitystate"]);
-
-        return $user;
+        return $content;
     }
     
     // TODO : creer des variables user et games pour simplifier les paramètres 
