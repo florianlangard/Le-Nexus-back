@@ -100,9 +100,12 @@ class UserController extends AbstractController
      */
     public function readReceivedRequestsByUser(User $user, RequestRepository $requestRepository): Response
     {
-        $requests = $requestRepository->findBy(['target' => $user]);
+        if ($user === $this->getUser()) {
+            $requests = $requestRepository->findBy(['target' => $user]);
        
-        return $this->json($requests, Response::HTTP_OK, [], ['groups' => 'request_info', 'user_info']);
+            return $this->json($requests, Response::HTTP_OK, [], ['groups' => 'request_info', 'user_info']);
+        }
+        return $this->json([], Response::HTTP_FORBIDDEN);
     }
 
     /**

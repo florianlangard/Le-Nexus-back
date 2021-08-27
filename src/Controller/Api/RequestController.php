@@ -29,17 +29,42 @@ class RequestController extends AbstractController
 
         $newRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
 
-        $errors = $validator->validate($newRequest);
+        if ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'friend') {
+            $errors = $validator->validate($newRequest);
         
-        if (count($errors) > 0) {
-            $errorsString = (string) $errors;
+            if (count($errors) > 0) {
+                $errorsString = (string) $errors;
             
-            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $em->persist($newRequest);
-        $em->flush();
+                return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            $em->persist($newRequest);
+            $em->flush();
 
-        return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
+            return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
+
+        } elseif ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'game') {
+
+            foreach ($this->getUser()->getFriends() as $currentFriendship) {
+
+                $currentfriend = $currentFriendship->getFriend();
+    
+                if ($newRequest->getTarget() === $currentfriend) {
+                    $errors = $validator->validate($newRequest);
+        
+                    if (count($errors) > 0) {
+                        $errorsString = (string) $errors;
+                    
+                        return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+                    }
+                    $em->persist($newRequest);
+                    $em->flush();
+        
+                    return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
+                }
+                
+            }
+        }
+        return $this->json([], Response::HTTP_FORBIDDEN);
     }
 
     /**
