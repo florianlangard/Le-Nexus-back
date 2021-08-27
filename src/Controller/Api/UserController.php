@@ -159,51 +159,45 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/{steamId<\d+>}", name="api_users_patch", methods={"PATCH", "PUT"})
      */
-    public function patch(Request $request, User $user = null, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function patch(Request $request, User $user, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
-        if ($user === null) {
-            return $this->json(['message' => 'utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $jsonContent = $request->getContent();
-
-        $userUpdated = $serializer->deserialize($jsonContent, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
-        
-        $content = $request->toArray();
-  
-        if ($content['password']) {
-            $hashedPassword = $userPasswordHasher->hashPassword($userUpdated, $userUpdated->getPassword());
-            $userUpdated->setPassword($hashedPassword);
-        }
-
-        $errors = $validator->validate($userUpdated);
-
-        if (count($errors) > 0) {
-
-            $newErrors = [];
-
-            foreach ($errors as $error) {
-                $newErrors[$error->getPropertyPath()][] = $error->getMessage();
+        if ($user === $this->getUser()) {
+            $jsonContent = $request->getContent();
+            
+            $userUpdated = $serializer->deserialize($jsonContent, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
+            
+            $content = $request->toArray();
+            
+            if (array_key_exists('password', $content)) {
+                $hashedPassword = $userPasswordHasher->hashPassword($userUpdated, $userUpdated->getPassword());
+                $userUpdated->setPassword($hashedPassword);
             }
-
-            return $this->json($newErrors, Response::HTTP_UNPROCESSABLE_ENTITY);
+            
+            $errors = $validator->validate($userUpdated);
+            
+            if (count($errors) > 0) {
+                $newErrors = [];
+                
+                foreach ($errors as $error) {
+                    $newErrors[$error->getPropertyPath()][] = $error->getMessage();
+                }
+                
+                return $this->json($newErrors, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            
+            $entityManager->persist($userUpdated);
+            $entityManager->flush();
+            
+            return $this->json($userUpdated, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
+            
         }
-        
-        $entityManager->persist($userUpdated);
-        $entityManager->flush();
-
-        return $this->json($userUpdated, Response::HTTP_ACCEPTED, [],  ['groups' => 'user_info']);
-        // return $this->redirectToRoute('api_movies_get_item', ['id' => $movieUpdated->getId()], Response::HTTP_ACCEPTED);
-
-        // @todo Conditionner le message de retour au cas où
-        // l'entité ne serait pas modifiée
-        // return new JsonResponse(['message' => 'Film modifié.', Response::HTTP_OK]);
+        return $this->json([], Response::HTTP_FORBIDDEN);
     }
-
-    /**
-     * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
-     */
-    public function delete(User $user, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
+        
+        /**
+         * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
+         */
+        public function delete(User $user, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
     {
         if ($user === $this->getUser()) {
             
