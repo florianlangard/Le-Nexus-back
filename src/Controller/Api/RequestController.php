@@ -64,6 +64,7 @@ class RequestController extends AbstractController
                 
             }
         }
+        
         return $this->json([], Response::HTTP_FORBIDDEN);
     }
 
@@ -75,28 +76,35 @@ class RequestController extends AbstractController
         $json = $request->getContent();
         $updatedRequest = $serializer->deserialize($json, EntityRequest::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $entityRequest]);
 
-        $errors = $validator->validate($updatedRequest);
+        if ($updatedRequest->getTarget() === $this->getUser()) {
 
-        if (count($errors) > 0) {
+            $errors = $validator->validate($updatedRequest);
 
-            $newErrors = [];
+            if (count($errors) > 0) {
 
-            foreach ($errors as $error) {
-                $newErrors[$error->getPropertyPath()][] = $error->getMessage();
+                $newErrors = [];
+
+                foreach ($errors as $error) {
+                    $newErrors[$error->getPropertyPath()][] = $error->getMessage();
+                }
+
+                return new JsonResponse(["errors" => $newErrors], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            return new JsonResponse(["errors" => $newErrors], Response::HTTP_UNPROCESSABLE_ENTITY);
+            $em->flush();
+            // dd($updatedRequest);
+            if($entityRequest->getType() === "game") {
+                $updatedFriendship = $responseHandler->handleGameRequest($updatedRequest);
+                return $this->json($updatedFriendship, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
+            }
+            if($entityRequest->getType() === "friend") {
+                $newFriendship = $responseHandler->handleFriendRequest($updatedRequest);
+                return $this->json($newFriendship, Response::HTTP_CREATED, [], ['groups' => 'user_info']);
+            }
         }
 
-        $em->flush();
-        // dd($updatedRequest);
-        if($entityRequest->getType() === "game") {
-            $updatedFriendship = $responseHandler->handleGameRequest($updatedRequest);
-            return $this->json($updatedFriendship, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
-        }
-        if($entityRequest->getType() === "friend") {
-            $newFriendship = $responseHandler->handleFriendRequest($updatedRequest);
-            return $this->json($newFriendship, Response::HTTP_CREATED, [], ['groups' => 'user_info']);
-        }
+        return $this->json([], Response::HTTP_FORBIDDEN);
+
+        
     }
 }
