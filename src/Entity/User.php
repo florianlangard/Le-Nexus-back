@@ -54,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=32, unique=true)
      * @Groups({"user_info", "request_info"})
      * @Assert\NotBlank
-     * @Assert\Length( min=1, max=32)
+     * @Assert\Length( min=3, max=32)
      */
     private $pseudo;
 

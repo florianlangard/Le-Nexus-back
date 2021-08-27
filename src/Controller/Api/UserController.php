@@ -24,15 +24,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/api/users", name="api_users_get", methods="GET")
-     */
-    public function browse(UserRepository $userRepository): Response
-    {
-        $users = $userRepository->findAll();
+    // /**
+    //  * @Route("/api/users", name="api_users_get", methods="GET")
+    //  */
+    // public function browse(UserRepository $userRepository): Response
+    // {
+    //     $users = $userRepository->findAll();
        
-        return $this->json($users, Response::HTTP_OK, [], ['groups' => 'user_info']);
-    }
+    //     return $this->json($users, Response::HTTP_OK, [], ['groups' => 'user_info']);
+    // }
 
     /**
      * @Route("/api/users/pseudo/{searching}", name="api_users_get_collection", methods="GET")
@@ -71,13 +71,18 @@ class UserController extends AbstractController
     // }
 
     /**
-     * @Route("/api/users/{id<\d+>}/mood", name="api_users_get_mood", methods="GET")
+     * @Route("/api/users/{steamId<\d+>}/mood", name="api_users_get_mood", methods="GET")
      */
     public function readMoodByUser(User $user, MoodRepository $moodRepository): Response
     {
-        $mood = $moodRepository->find($user);
-       
-        return $this->json($mood, Response::HTTP_OK, [], ['groups' => 'mood_info']);
+        if ($user === $this->getUser()) {
+
+            $mood = $moodRepository->find($user);
+        
+            return $this->json($mood, Response::HTTP_OK, [], ['groups' => 'mood_info']);
+        }
+
+        return $this->json([], Response::HTTP_FORBIDDEN);
     }
 
     /**
@@ -85,18 +90,24 @@ class UserController extends AbstractController
      */
     public function readFriendsByUser(User $user, UserRepository $userRepository): Response
     {
-        $friends = [];
+        if ($user === $this->getUser()) {
 
-        foreach ($user->getFriends() as $currentFriendship){
-            $friend = $userRepository->find($currentFriendship->getFriend());
-            $friends[] = $friend;
+            $friends = [];
+
+            foreach ($user->getFriends() as $currentFriendship){
+                $friend = $userRepository->find($currentFriendship->getFriend());
+                $friends[] = $friend;
+            }
+        
+            return $this->json($friends, Response::HTTP_OK, [], ['groups' => 'user_info']);
         }
-       
-        return $this->json($friends, Response::HTTP_OK, [], ['groups' => 'user_info']);
+
+        return $this->json([], Response::HTTP_FORBIDDEN);
+        
     }
 
     /**
-     * @Route("/api/users/{id<\d+>}/requests", name="api_users_get_requests", methods="GET")
+     * @Route("/api/users/{steamId<\d+>}/requests", name="api_users_get_requests", methods="GET")
      */
     public function readReceivedRequestsByUser(User $user, RequestRepository $requestRepository): Response
     {
@@ -198,7 +209,7 @@ class UserController extends AbstractController
     }
         
         /**
-         * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
+         * @Route("/api/users/{steamId<\d+>}", name="api_users_delete", methods="DELETE")
          */
         public function delete(User $user, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
     {
