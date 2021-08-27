@@ -1,0 +1,13 @@
+body {
+    background-color: #333333;
+    color: white;
+}
+
+nav {
+    font-family: 'Press Start 2P', cursive;
+}
+
+h1 {
+    margin-bottom: 2em;
+    margin-top: 2em;
+}
