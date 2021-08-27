@@ -49,6 +49,8 @@ class RequestController extends AbstractController
                 $currentfriend = $currentFriendship->getFriend();
     
                 if ($newRequest->getTarget() === $currentfriend) {
+
+                    
                     $errors = $validator->validate($newRequest);
         
                     if (count($errors) > 0) {
