@@ -23,13 +23,16 @@ class AuthenticationSuccessListener
         // dd($authenticatedUserId);
         // $person_id = $person->getId();
 
-        $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
-        $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
         $this->steamApi->updateUserInfo(($event->getUser()));
 
-        $notice = 'Update OK';
         if (!$event->getUser()->getVisibilityState()) {
             $notice = 'Your Steam account is private. We could not updated your Nexus infos';
+        }
+        else {
+            $notice = 'Update OK';
+            
+            $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
+            $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
         }
 
         $event->setData([
