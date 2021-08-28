@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Friendship;
 use App\Entity\Game;
 use App\Entity\Library;
+use App\Entity\User;
 use App\Repository\FriendshipRepository;
 use App\Repository\GameRepository;
 use App\Repository\LibraryRepository;
@@ -49,6 +50,42 @@ class steamApi
         }
 
         return $content;
+    }
+
+    public function updateUserInfo(User $user): User
+    {
+        $response = $this->client->request(
+            'GET',
+            'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=8042AD2C22CFB15EE1A668BACFEB5D27&steamids='.$user->getSteamId());
+
+        $content = $response->toArray();
+        $content = $content["response"]["players"][0];
+
+        // If the Steam pseudo has changed
+        if ($user->getSteamUsername() !== $content["personaname"]) {
+            $user->setSteamUsername($content["personaname"]);
+        }
+        // If the Steam avatar has changed
+        if ($user->getSteamAvatar() !== $content["avatarfull"]) {
+            $user->setSteamAvatar($content["avatarfull"]);
+        }
+
+
+        // Set to "true" or "false" the "communityvisibiltystate" keyto match our db because the api returns 3 or 1
+        if ($content["communityvisibilitystate"] === 3) {
+            $content["communityvisibilitystate"] = true;
+        }
+        else {
+            $content["communityvisibilitystate"] = false;
+        }
+        // If the Steam visibilty state has changed
+        if ($user->getVisibilityState() !== $content["communityvisibilitystate"]) {
+            $user->setVisibilityState($content["communityvisibilitystate"]);
+        }
+
+        $this->em->flush();
+        
+        return $user;
     }
     
     // TODO : creer des variables user et games pour simplifier les paramètres 
