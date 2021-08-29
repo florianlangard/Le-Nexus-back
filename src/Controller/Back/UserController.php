@@ -5,6 +5,7 @@ namespace App\Controller\Back;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,6 +69,7 @@ class UserController extends AbstractController
         
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setUpdatedAt(new DateTime());
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('user_index', [], Response::HTTP_SEE_OTHER);

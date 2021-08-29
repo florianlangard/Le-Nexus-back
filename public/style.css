@@ -1,13 +1,28 @@
 body {
-    background-color: #333333;
-    color: white;
+    background-color: #454545;
+    color: black;
 }
 
 nav {
     font-family: 'Press Start 2P', cursive;
+    width: 100vw;
 }
 
 h1 {
     margin-bottom: 2em;
     margin-top: 2em;
+}
+
+th, td, tbody, tr{
+    color:black;
+}
+
+img {
+    max-height: 80px;
+    max-width: 80px;
+}
+
+a, a:hover {
+    text-decoration: none;
+    color: white;
 }
