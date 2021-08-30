@@ -138,6 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->friends = new ArrayCollection();
         $this->roles = ["ROLE_USER"];
         $this->createdAt = new DateTime();
+        $this->isLogged = false;
     }
 
     public function __toString()
