@@ -2,14 +2,16 @@
 
 namespace App\Controller\Back;
 
+use DateTime;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Service\steamApi;
 use App\Repository\UserRepository;
-use DateTime;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @Route("back/user")
@@ -29,18 +31,27 @@ class UserController extends AbstractController
     /**
      * @Route("/new", name="user_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, steamApi $steamApi, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $steamInfos = $steamApi->fetchUserInfo($user->getSteamId());
+
+            $user->setSteamUsername($steamInfos["personaname"]);
+            $user->setSteamAvatar($steamInfos["avatarfull"]);
+            $user->setVisibilityState($steamInfos["communityvisibilitystate"]);
+
+            $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
+            $user->setPassword($hashedPassword);
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('user_list', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('user_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('user/new.html.twig', [
@@ -67,6 +78,7 @@ class UserController extends AbstractController
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
         
+        $passwordRequired = false;
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setUpdatedAt(new DateTime());
@@ -78,6 +90,7 @@ class UserController extends AbstractController
         return $this->renderForm('user/edit.html.twig', [
             'user' => $user,
             'form' => $form,
+            'passwordRequired' => $passwordRequired
         ]);
     }
 

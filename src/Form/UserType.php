@@ -23,8 +23,8 @@ class UserType extends AbstractType
                 'expanded' => true,
             ])
             ->add('pseudo')
-            // ->add('password')
-            // ->add('steamId')
+            ->add('password')
+            ->add('steamId')
             //->add('steamUsername')
             //->add('steamAvatar')
             //->add('visibilityState')
