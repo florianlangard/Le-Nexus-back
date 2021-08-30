@@ -55,4 +55,5 @@ security:
         - { path: ^/api/users, roles: ROLE_USER, methods: GET }
         # - { path: ^/api/users, roles: ROLE_ADMIN, methods: GET }
         - { path: ^/api/request, roles: ROLE_USER, methods: POST }
+        - { path: ^/back, roles: ROLE_ADMIN }
 
