@@ -18,6 +18,8 @@
 
 	</head>
 	<body>
+		{% block active_front %}{% endblock %}
+		{% block active_back %}{% endblock %}
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="#">Le Nexus</a>
@@ -26,7 +28,8 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 					<div class="navbar-nav">
-						<a class="nav-link active" aria-current="page" href="#">Utilisateurs</a>
+						<a class="nav-link {% block active_user %}active{% endblock %}" aria-current="page" href="{{ path('user_index') }}">Utilisateurs</a>
+						<a class="nav-link {% block active_mood %}{% endblock %}" href="{{ path('mood_index') }}">Moods</a>
 						<a class="nav-link" href="#">Coming soon</a>
 					</div>
 				</div>

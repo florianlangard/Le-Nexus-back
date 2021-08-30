@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MoodRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -45,6 +46,7 @@ class Mood
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int

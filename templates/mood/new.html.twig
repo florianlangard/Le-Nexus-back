@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Mood{% endblock %}
+
+{% block active_user %}{% endblock %}
+{% block active_mood %}active{% endblock %}
+
+{% block body %}
+    <h1>Create new Mood</h1>
+
+    {{ include('mood/_form.html.twig') }}
+
+    <a href="{{ path('mood_index') }}">back to list</a>
+{% endblock %}
