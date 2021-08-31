@@ -186,6 +186,10 @@ class UserController extends AbstractController
                 $hashedPassword = $userPasswordHasher->hashPassword($userUpdated, $userUpdated->getPassword());
                 $userUpdated->setPassword($hashedPassword);
             }
+
+            if (array_key_exists('roles', $content)) {
+                return $this->json('You are not allowed to change your role', Response::HTTP_FORBIDDEN);
+            }
             
             $errors = $validator->validate($userUpdated);
             

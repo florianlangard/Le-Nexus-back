@@ -68,7 +68,7 @@ class RequestController extends AbstractController
             }
             // If the target of the request has not the game in his library
             if (!$libraryRepository->findOneByGameAndUser($newRequest->getGame(), $newRequest->getTarget())) {
-                return $this->json('You friend must have these game in your library to send an invitation', Response::HTTP_FORBIDDEN);
+                return $this->json('Your friend must have these game in his library to send an invitation', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
