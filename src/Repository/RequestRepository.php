@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\Request;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Request|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,20 @@ class RequestRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Request::class);
+    }
+
+    public function findOneBySenderAndTarget(User $sender, User $target): ?Request
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.sender = :sender')
+            ->orWhere('r.sender = :target')
+            ->andWhere('r.target = :target')
+            ->orWhere('r.target = :sender')
+            ->setParameter('sender', $sender)
+            ->setParameter('target', $target)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     // /**

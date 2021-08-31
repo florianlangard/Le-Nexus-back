@@ -25,17 +25,22 @@ class RequestController extends AbstractController
     /**
      * @Route("/api/request", name="api_request_send", methods={"POST"})
      */
-    public function sendRequest(FriendshipRepository $friendshipRepository, LibraryRepository $libraryRepository, Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
+    public function sendRequest(FriendshipRepository $friendshipRepository, RequestRepository $requestRepository, LibraryRepository $libraryRepository, Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
         $jsonContent = $request->getContent();
 
         $newRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
+        // dd($newRequest);
 
         if ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'friend') {
 
             // If Users are already friends
             if ($friendshipRepository->findOneByUserAndFriend($this->getUser(), $newRequest->getTarget())) {
                 return $this->json('You are already friend with these user', Response::HTTP_FORBIDDEN);
+            }
+            // If you already sent an invitation tothis user
+            if ($requestRepository->findOneBySenderAndTarget($this->getUser(), $newRequest->getTarget())) {
+                return $this->json('You already sent an invitation', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
@@ -87,12 +92,17 @@ class RequestController extends AbstractController
     /**
      * @Route("/api/request/{id}", name="api_request_answer", methods={"PATCH"})
      */
-    public function sendResponse(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, EntityRequest $entityRequest, ResponseHandler $responseHandler)
+    public function sendResponse(Request $request, FriendshipRepository $friendshipRepository, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, EntityRequest $entityRequest, ResponseHandler $responseHandler)
     {
         $json = $request->getContent();
         $updatedRequest = $serializer->deserialize($json, EntityRequest::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $entityRequest]);
 
         if ($updatedRequest->getTarget() === $this->getUser()) {
+
+            // If the user connected has not in his frendslist the user set in the target property of the request
+            if ($friendshipRepository->findOneByUserAndFriend($this->getUser(), $updatedRequest->getSender())) {
+                return $this->json('You are already friend with tis user', Response::HTTP_FORBIDDEN);
+            }
 
             $errors = $validator->validate($updatedRequest);
 
