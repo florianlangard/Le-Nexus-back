@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Service\steamApi;
 use App\Repository\UserRepository;
+use App\Repository\FriendshipRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -97,10 +98,15 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="user_delete", methods={"POST"})
      */
-    public function delete(Request $request, User $user): Response
+    public function delete(Request $request, User $user, FriendshipRepository $friendshipRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
+            $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
+            
+            foreach ($friendshipsReverse as $currentFriendshipReverse) {
+                $entityManager->remove($currentFriendshipReverse);
+            }
             $entityManager->remove($user);
             $entityManager->flush();
         }
