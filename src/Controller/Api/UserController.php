@@ -58,6 +58,7 @@ class UserController extends AbstractController
             }
             return $this->json([], Response::HTTP_FORBIDDEN);
         }
+        return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
     }
 
     // /**
