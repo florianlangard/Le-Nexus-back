@@ -102,6 +102,7 @@ class UserController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
+            
             $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
             
             foreach ($friendshipsReverse as $currentFriendshipReverse) {
