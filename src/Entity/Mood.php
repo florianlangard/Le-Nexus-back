@@ -24,7 +24,7 @@ class Mood
 
     /**
      * @ORM\Column(type="string", length=64)
-     * @Groups("mood_info")
+     * @Groups({"mood_info", "user_info"})
      */
     private $name;
 
