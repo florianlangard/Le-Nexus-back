@@ -3,49 +3,56 @@
 {% block title %}Le Nexus - BackOffice{% endblock %}
 
 {% block body %}
+
+<div class="my-1 d-flex justify-content-between align-items-center px-3">
     <h1>Gestion des Utilisateurs</h1>
 
-    <button class="btn btn-success"><a href="{{ path('user_new') }}">Create new</button></a>
+    <a href="{{ path('user_new') }}" class="btn btn-success" role="button"><i class="fas fa-plus-circle"></i> Créer un utilisateur</a>
+</div>
 
-    <table class="table">
+<div class="table-responsive mx-3">
+    <table class="table table-hover">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Email</th>
-                <th>Roles</th>
+                <th>Role</th>
                 <th>Pseudo</th>
-                <th>SteamId</th>
-                <th>SteamUsername</th>
-                <th>SteamAvatar</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
+                <th class="d-none md-table-cell">SteamId</th>
+                <th class="d-none md-table-cell">Pseudo Steam</th>
+                <th>Avatar Steam</th>
+                <th>Date de création</th>
+                <th>Mise à jour</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
                 <td>{{ user.pseudo }}</td>
-                <td>{{ user.steamId }}</td>
-                <td>{{ user.steamUsername }}</td>
+                <td class="d-none md-table-cell">{{ user.steamId }}</td>
+                <td class="d-none md-table-cell">{{ user.steamUsername }}</td>
                 <td><img src="{{ user.steamAvatar }}"></td>
-                <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ user.createdAt ? user.createdAt|date('d/m/Y H:i:s') : '' }}</td>
+                <td>{{ user.updatedAt ? user.updatedAt|date('d/m/Y H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('user_show', {'id': user.id}) }}"><button class="btn btn-success">Afficher</button></a>
-                    <a href="{{ path('user_edit', {'id': user.id}) }}"><button class="btn btn-warning">Editer</button></a>
+                    <div class="d-flex">
+                        <a href="{{ path('user_show', {'id': user.id}) }}" class="btn btn-success me-1" role="button"><i class="fas fa-binoculars fa-2x"></i></a>
+                        <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-warning me-1" role="button"><i class="far fa-edit fa-2x"></i></a>
+                        {{ include('user/_delete_form.html.twig') }}
+                    </div>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="13">no records found</td>
+                <td colspan="13">Il n'y a pas grand chose à afficher par ici...</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
+
 
     
 {% endblock %}

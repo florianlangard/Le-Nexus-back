@@ -13,5 +13,6 @@
     {{ form_row(form.roles) }}
     {{ form_row(form.steamId) }}
     
-    <button class="btn btn-success">{{ button_label|default('Save') }}</button>
+    <button class="btn btn-success">{{ button_label|default('Créer') }} <i class="fas fa-save"></i></button>
+    <a href="{{ path('user_index') }}"><button class="btn btn-primary me-1" type="button">Retour à la liste <i class="fas fa-step-backward"></i></button></a>
 {{ form_end(form) }}

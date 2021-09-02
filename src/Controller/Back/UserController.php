@@ -98,10 +98,15 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="user_delete", methods={"POST"})
      */
-    public function delete(Request $request, User $user, FriendshipRepository $friendshipRepository): Response
+    public function delete(Request $request, User $user = null, FriendshipRepository $friendshipRepository): Response
     {
+        if($user === null) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+            
             $entityManager = $this->getDoctrine()->getManager();
+
             $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
             
             foreach ($friendshipsReverse as $currentFriendshipReverse) {
