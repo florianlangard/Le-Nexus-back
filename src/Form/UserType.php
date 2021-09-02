@@ -48,7 +48,8 @@ class UserType extends AbstractType
                             'help' => 'Rappel: Un mot de passe fort mange sa soupe et a au moins huit caractères, dont au moins une lettre, un chiffre et un caractère spécial.'
                         ],
                         'second_options' => ['label' => 'Répéter le mot de passe'],
-                    ]);
+                    ])
+                    ;
 
                 } else {
 
