@@ -3,67 +3,69 @@
 {% block title %}User{% endblock %}
 
 {% block body %}
+<div class="col-6 mx-auto">
 <div class="my-1 d-flex justify-content-between align-items-center px-3">
-    <h1>Infos utilisateur : {{ user.pseudo }}</h1>
+    <h1>Détails : {{ user.pseudo }}</h1>
 
     <a href="{{ path('user_new') }}" class="btn btn-success" role="button"><i class="fas fa-plus-circle"></i> Créer un utilisateur</a>
 </div>
     
 
-    <table class="table">
-        <tbody>
+    <table class="table table-hover">
+        <tbody class="">
             <tr>
                 <th>Id</th>
-                <td>{{ user.id }}</td>
+                <td class="text-end">{{ user.id }}</td>
             </tr>
             <tr>
                 <th>Email</th>
-                <td>{{ user.email }}</td>
+                <td class="text-end">{{ user.email }}</td>
             </tr>
             <tr>
                 <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td class="text-end">{{ user.roles ? user.roles|json_encode : '' }}</td>
             </tr>
             <tr>
                 <th>Pseudo</th>
-                <td>{{ user.pseudo }}</td>
+                <td class="text-end">{{ user.pseudo }}</td>
             </tr>
             <tr>
                 <th>SteamId</th>
-                <td>{{ user.steamId }}</td>
+                <td class="text-end">{{ user.steamId }}</td>
             </tr>
             <tr>
                 <th>SteamUsername</th>
-                <td>{{ user.steamUsername }}</td>
+                <td class="text-end">{{ user.steamUsername }}</td>
             </tr>
             <tr>
-                <th>SteamAvatar</th>
-                <td><img src="{{ user.steamAvatar }}"></img></td>
+                <th class="align-middle">SteamAvatar</th>
+                <td class="text-end"><img src="{{ user.steamAvatar }}"></img></td>
             </tr>
             <tr>
                 <th>VisibilityState</th>
-                <td>{{ user.visibilityState ? 'Yes' : 'No' }}</td>
+                <td class="text-end">{{ user.visibilityState ? 'Yes' : 'No' }}</td>
             </tr>
             <tr>
                 <th>IsLogged</th>
-                <td>{{ user.isLogged ? 'Yes' : 'No' }}</td>
+                <td class="text-end">{{ user.isLogged ? 'Yes' : 'No' }}</td>
             </tr>
             <tr>
                 <th>CreatedAt</th>
-                <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="text-end">{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>UpdatedAt</th>
-                <td>{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="text-end">{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
     </table>
 
     <div class="d-flex ms-0 ps-0">
-    <a href="{{ path('user_index') }}"><button class="btn btn-primary me-1">Retour à la liste <i class="fas fa-step-backward"></i></button></a>
+    <a href="{{ path('user_index') }}"><button class="btn btn-primary me-3">Retour à la liste <i class="fas fa-step-backward"></i></button></a>
 
-    <a href="{{ path('user_edit', {'id': user.id}) }}"><button class="btn btn-warning me-1">Editer <i class="far fa-edit"></i></button></a>
+    <a href="{{ path('user_edit', {'id': user.id}) }}"><button class="btn btn-warning me-3">Editer <i class="far fa-edit"></i></button></a>
 
     {{ include('user/_delete_form.html.twig') }}
+    </div>
     </div>
 {% endblock %}
