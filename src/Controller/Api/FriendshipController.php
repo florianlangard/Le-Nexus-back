@@ -22,12 +22,17 @@ class FriendshipController extends AbstractController
             return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
         }
 
-        $friendshipReverse = $friendshipRepository->findOneByUserAndFriend($friendship->getFriend(),$friendship->getUser());
+        if ($friendship->getUser() === $this->getUser()) {
 
-        $em->remove($friendship);
-        $em->remove($friendshipReverse);
-        $em->flush();
+            $friendshipReverse = $friendshipRepository->findOneByUserAndFriend($friendship->getFriend(),$friendship->getUser());
 
-        return $this->json(['message' => 'La relation a bien été supprimée.'], Response::HTTP_OK);
+            $em->remove($friendship);
+            $em->remove($friendshipReverse);
+            $em->flush();
+
+            return $this->json(['message' => 'La relation a bien été supprimée.'], Response::HTTP_OK);
+        }
+
+        return $this->json([], Response::HTTP_FORBIDDEN);
     }
 }
