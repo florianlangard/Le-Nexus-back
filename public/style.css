@@ -62,4 +62,24 @@ a, a:hover {
 20%, 24%, 55% {        
     text-shadow: none;
 }
+
+}
+.fa-check {
+    color: greenyellow;
+}
+
+.card {
+    background-color: grey;
+}
+
+.email {
+    font-weight: bold;
+}
+
+.message-date {
+    font-style: white
+}
+
+.date {
+    font-style: italic;
 }

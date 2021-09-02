@@ -2,33 +2,47 @@
 
 {% block title %}Message index{% endblock %}
 
+{% block active_user %}{% endblock %}
+{% block active_message %}active{% endblock %}
+
 {% block body %}
-    <h1>Message index</h1>
+    {# <h1>Message index</h1> #}
+    <div class="my-1 d-flex justify-content-between align-items-center px-3">
+        <h1>Gestion des Messages</h1>
+    </div>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Lu</th>
                 <th>Email</th>
-                <th>Content</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
+                <th>Message</th>
+                <th>Envoyé le</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for message in messages %}
-            <tr>
+            <tr class="align-middle">
                 <td>{{ message.id }}</td>
+                <td>{% if message.isRead %}<i class="fas fa-check">{% endif %}</i></td>
                 <td>{{ message.email }}</td>
                 <td>{{ message.content }}</td>
                 <td>{{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
+                {# <td>
                     <a href="{{ path('back_message_show', {'id': message.id}) }}">show</a>
+                </td> #}
+                <td>
+                    <div class="d-flex">
+                        <a href="{{ path('back_message_show', {'id': message.id}) }}" class="btn btn-success me-1" role="button"><i class="fas fa-binoculars fa-2x"></i></a>
+                        {{ include('back/message/_delete_form.html.twig') }}
+                    </div>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="6">Reprends la sieste, il n' y a rien à faire.</td>
             </tr>
         {% endfor %}
         </tbody>
