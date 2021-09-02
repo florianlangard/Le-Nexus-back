@@ -25,17 +25,19 @@
 					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
-					<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
 						<div class="navbar-nav">
 							<a class="nav-link {% block active_user %}active{% endblock %}" aria-current="page" href="{{ path('user_index') }}">Utilisateurs</a>
 							<a class="nav-link {% block active_mood %}{% endblock %}" href="{{ path('mood_index') }}">Moods</a>
 							<a class="nav-link" href="#">Coming soon</a>
 						</div>
-					</div>
-					{# <form class="d-flex">
+					<div>
+					<form class="d-flex">
 						<input class="form-control me-2" type="search" placeholder="Recherche" aria-label="Search">
 						<button class="btn btn-outline-success" type="submit">Go!</button>
-					</form> #}
+					</form>
+					</div>
+					</div>
 				</nav>
 				<div class="row mx-5">
 					
