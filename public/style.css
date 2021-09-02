@@ -34,3 +34,23 @@ a, a:hover {
 #user_password_first_help {
     color: white;
 }
+
+.fa-check {
+    color: greenyellow;
+}
+
+.card {
+    background-color: grey;
+}
+
+.email {
+    font-weight: bold;
+}
+
+.message-date {
+    font-style: white
+}
+
+.date {
+    font-style: italic;
+}

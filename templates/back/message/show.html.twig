@@ -2,10 +2,14 @@
 
 {% block title %}Message{% endblock %}
 
+{% block active_user %}{% endblock %}
+{% block active_message %}active{% endblock %}
+
 {% block body %}
+<div class="col-7 mx-auto ">
     <h1>Message</h1>
 
-    <table class="table">
+    {# <table class="table">
         <tbody>
             <tr>
                 <th>Id</th>
@@ -24,9 +28,20 @@
                 <td>{{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
-    </table>
+    </table> #}
 
-    <a href="{{ path('back_message_index') }}">back to list</a>
+    <div class="card mb-3">
+    <div class="card-body">
+        <h4 class="card-title">Message envoyé par <span class="email">{{ message.email }}</span> :</h4>
+        <p class="card-text px-4 my-5">{{ message.content }}</p>
+        <p class="card-text"><small class="message-date">envoyé le <span class="date">{{ message.createdAt ? message.createdAt|date('d/m/Y à H:i:s') : '' }}</span></small></p>
+    </div>
+    </div>
 
-    {{ include('back/message/_delete_form.html.twig') }}
+    <div class="d-flex ms-0 ps-0">
+        {# <a href="{{ path('back_message_index') }}">back to list</a> #}
+        <a href="{{ path('back_message_index') }}"><button class="btn btn-primary me-3">Retour à la liste <i class="fas fa-step-backward"></i></button></a>
+        {{ include('back/message/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

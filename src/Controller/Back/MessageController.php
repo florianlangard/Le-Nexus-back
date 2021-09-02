@@ -31,6 +31,8 @@ class MessageController extends AbstractController
     public function show(Message $message): Response
     {
         $message->setIsRead(true);
+        $entityManager = $this->getDoctrine()->getManager();$entityManager = $this->getDoctrine()->getManager();
+        $entityManager->flush();
         
         return $this->render('back/message/show.html.twig', [
             'message' => $message,
