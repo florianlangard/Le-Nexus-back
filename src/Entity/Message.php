@@ -37,9 +37,15 @@ class Message
      */
     private $createdAt;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isRead;
+
     public function __construct()
     {
         $this->createdAt = new DateTime();
+        $this->isRead = false;
     }
 
     public function getId(): ?int
@@ -79,6 +85,18 @@ class Message
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getIsRead(): ?bool
+    {
+        return $this->isRead;
+    }
+
+    public function setIsRead(bool $isRead): self
+    {
+        $this->isRead = $isRead;
 
         return $this;
     }
