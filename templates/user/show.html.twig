@@ -3,7 +3,12 @@
 {% block title %}User{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+<div class="my-1 d-flex justify-content-between align-items-center px-3">
+    <h1>Infos utilisateur : {{ user.pseudo }}</h1>
+
+    <a href="{{ path('user_new') }}" class="btn btn-success" role="button">Créer un utilisateur</a>
+</div>
+    
 
     <table class="table">
         <tbody>
@@ -18,10 +23,6 @@
             <tr>
                 <th>Roles</th>
                 <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
             </tr>
             <tr>
                 <th>Pseudo</th>

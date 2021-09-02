@@ -18,8 +18,8 @@
                 <th>Email</th>
                 <th>Role</th>
                 <th>Pseudo</th>
-                <th>SteamId</th>
-                <th>Pseudo Steam</th>
+                <th class="d-none md-table-cell">SteamId</th>
+                <th class="d-none md-table-cell">Pseudo Steam</th>
                 <th>Avatar Steam</th>
                 <th>Date de création</th>
                 <th>Mise à jour</th>
@@ -33,15 +33,17 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
                 <td>{{ user.pseudo }}</td>
-                <td>{{ user.steamId }}</td>
-                <td>{{ user.steamUsername }}</td>
+                <td class="d-none md-table-cell">{{ user.steamId }}</td>
+                <td class="d-none md-table-cell">{{ user.steamUsername }}</td>
                 <td><img src="{{ user.steamAvatar }}"></td>
                 <td>{{ user.createdAt ? user.createdAt|date('d/m/Y H:i:s') : '' }}</td>
                 <td>{{ user.updatedAt ? user.updatedAt|date('d/m/Y H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('user_show', {'id': user.id}) }}" class="btn btn-success" role="button">Afficher</a>
                     <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-warning" role="button">Editer</a>
-                    <a href="{{ path('user_delete', {'id': user.id}) }}" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
+                    {# <a href="{{ path('user_delete', {'id': user.id}) }}"><i class="far fa-trash-alt btn btn-danger"></i></a> #}
+                    {# <a href="{{ path('user_delete', {'id': user.id}) }}" class="btn btn-danger"><i class="far fa-trash-alt">{{ include('user/_delete_form.html.twig') }}</i></a> #}
+                    {{ include('user/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
