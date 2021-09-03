@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur{% endblock %}
+
+{% block body %}
+<div class="row">
+<div class="col-4 mx-auto text-center">
+<h1>404</h1>
+<p>On est bien ici, mais c'est un peu loin de tout, non?</p>
+</div>
+</div>
+<div class="row">
+<div class="col-4 mx-auto text-center">
+<a href="{{ path('user_index') }}"<button class="btn btn-primary">Retour à l'accueil</button></a>
+</div>
+</div>
+{% endblock %}

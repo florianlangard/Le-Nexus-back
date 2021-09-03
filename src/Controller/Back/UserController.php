@@ -64,8 +64,11 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="user_show", methods={"GET"})
      */
-    public function show(User $user): Response
+    public function show(User $user = null): Response
     {
+        if( $user === null) {
+            return $this->redirectToRoute('back_error');
+        }
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
@@ -74,8 +77,11 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, User $user, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function edit(Request $request, User $user = null, UserPasswordHasherInterface $userPasswordHasher): Response
     {
+        if( $user === null) {
+            return $this->redirectToRoute('back_error');
+        }
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
         
@@ -103,7 +109,7 @@ class UserController extends AbstractController
     public function delete(Request $request, User $user = null, FriendshipRepository $friendshipRepository): Response
     {
         if($user === null) {
-            throw $this->createNotFoundException('Utilisateur non trouvé');
+            return $this->redirectToRoute('back_error');
         }
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             
