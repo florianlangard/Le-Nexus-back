@@ -74,24 +74,26 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
         
-        $passwordRequired = false;
-
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if (!empty($form->get('password')->getData())) {
+                $hashedPassword = $userPasswordHasher->hashPassword($user, $form->get('password')->getData());
+                $user->setPassword($hashedPassword);
+            }
             $user->setUpdatedAt(new DateTime());
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('user_index', [], Response::HTTP_SEE_OTHER);
         }
-        // dd($form);
+        
         return $this->renderForm('user/edit.html.twig', [
             'user' => $user,
             'form' => $form,
-            'passwordRequired' => $passwordRequired
         ]);
     }
 
@@ -106,9 +108,8 @@ class UserController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             
             $entityManager = $this->getDoctrine()->getManager();
-
+            // Automatically deleting all the inverse entries in DB
             $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
-            
             foreach ($friendshipsReverse as $currentFriendshipReverse) {
                 $entityManager->remove($currentFriendshipReverse);
             }
