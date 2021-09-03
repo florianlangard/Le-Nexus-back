@@ -97,7 +97,7 @@ class steamApi
 
         $content = $response->toArray();
 
-        if ($content["response"]["games"]) {
+        if (array_key_exists("games", $content["response"])) {
             $games = $content["response"]["games"];
         }
         else {
@@ -157,7 +157,7 @@ class steamApi
 
         $content = $response->toArray();
 
-        if ($content["friendslist"]["friends"]) {
+        if (array_key_exists("friends", $content["friendslist"])) {
             $friends = $content["friendslist"]["friends"];
         }
         else {

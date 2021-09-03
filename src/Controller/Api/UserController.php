@@ -42,10 +42,14 @@ class UserController extends AbstractController
         // Setting by default a variable "allowed" to false
         $allowed = false;
 
+        if ($user === $this->getUser()) {
+            $allowed = true;
+        }
+
         // If the request is made by the actual connected user or one of his friends : set "allowed" to true
         foreach ($user->getFriends() as $currentFriendship) {
             $currentfriend = $currentFriendship->getFriend();
-            if ($user === $this->getUser() || $this->getUser() === $currentfriend) {
+            if ($this->getUser() === $currentfriend) {
                 $allowed = true;
             }
         }
@@ -155,8 +159,8 @@ class UserController extends AbstractController
         if($notice === null){
             // $steamApi->fetchGamesInfo($user->getSteamId());
             // $steamApi->fetchFriendsInfo($user->getSteamId());
-            $successOnGames   = $this->steamApi->fetchGamesInfo(strval($user->getSteamId()));
-            $successOnFriends = $this->steamApi->fetchFriendsInfo(strval($user->getSteamId()));
+            $successOnGames   = $steamApi->fetchGamesInfo($user->getSteamId());
+            $successOnFriends = $steamApi->fetchFriendsInfo($user->getSteamId());
 
             if ($successOnGames && $successOnFriends) {
                 $notice = 'Mise à jour : OK';
