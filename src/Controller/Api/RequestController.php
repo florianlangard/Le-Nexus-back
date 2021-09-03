@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\RequestRepository;
 use App\Entity\Request as EntityRequest;
@@ -30,24 +29,23 @@ class RequestController extends AbstractController
         $jsonContent = $request->getContent();
 
         $newRequest = $serializer->deserialize($jsonContent, EntityRequest::class, 'json');
-        // dd($newRequest);
 
+        // If the sender is the user connected and if the request is of type "friend" : handle the request
         if ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'friend') {
 
-            // If Users are already friends
+            // If Users are already friends : send an error
             if ($friendshipRepository->findOneByUserAndFriend($this->getUser(), $newRequest->getTarget())) {
-                return $this->json('You are already friend with these user', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous êtes déjà ami avec cet utilisateur.', Response::HTTP_FORBIDDEN);
             }
-            // If you already sent an invitation tothis user
+            // If the user already sent an invitation to this user : send an error
             if ($requestRepository->findOneBySenderAndTarget($this->getUser(), $newRequest->getTarget())) {
-                return $this->json('You already sent an invitation', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous avez déjà envoyé une invitation à cette utilisateur.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
 
-            if (count($errors) > 0) {
-                $errorsString = (string) $errors;
-            
+            if (count($errors) > 0) {           
+                // If the Request object filled with the received request does not match with constraints validation : send the error(s)
                 return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             $em->persist($newRequest);
@@ -56,26 +54,26 @@ class RequestController extends AbstractController
             return $this->json($newRequest, Response::HTTP_CREATED, [], ['groups' => 'request_info']);
 
         } 
+        // If the sender is the user connected and if the request is of type "game" : handle the request
         elseif ($newRequest->getSender() === $this->getUser() && $newRequest->getType() === 'game') {
 
-            // If the user connected has not in his frendslist the user set in the target property of the request
+            // If the user connected has not in his frendslist the target of the request : send an error
             if (!$friendshipRepository->findOneByUserAndFriend($this->getUser(), $newRequest->getTarget())) {
-                return $this->json('You must be friend with these user to send an invitation', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous devez être ami avec cette utilisateur pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
-            // If the user connected has not the game in his library
+            // If the user connected has not the game in his library : send an error
             if (!$libraryRepository->findOneByGameAndUser($newRequest->getGame(), $this->getUser())) {
-                return $this->json('You must have these game in your library to send an invitation', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous devez avoir ce jeu dans votre librairie pour envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
-            // If the target of the request has not the game in his library
+            // If the target of the request has not the game in his library : send an error
             if (!$libraryRepository->findOneByGameAndUser($newRequest->getGame(), $newRequest->getTarget())) {
-                return $this->json('Your friend must have these game in his library to send an invitation', Response::HTTP_FORBIDDEN);
+                return $this->json('Votre ami doit avoir ce jeu dans sa librairie pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
 
             if (count($errors) > 0) {
-                $errorsString = (string) $errors;
-            
+                // If the Request object filled with the received request does not match with constraints validation : send the error(s)
                 return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             $em->persist($newRequest);
@@ -95,21 +93,24 @@ class RequestController extends AbstractController
     public function sendResponse(Request $request, FriendshipRepository $friendshipRepository, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em, EntityRequest $entityRequest, ResponseHandler $responseHandler)
     {
         $json = $request->getContent();
+
         $updatedRequest = $serializer->deserialize($json, EntityRequest::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $entityRequest]);
 
+        // If the user connected is the target of the request : handle the response
         if ($updatedRequest->getTarget() === $this->getUser()) {
 
-            // If the user connected has not in his frendslist the user set in the target property of the request
+            // If the user connected has already in his frendslist the user who sent the request : send an error
             if ($friendshipRepository->findOneByUserAndFriend($this->getUser(), $updatedRequest->getSender())) {
-                return $this->json('You are already friend with tis user', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous êtes déjà ami avec cette utilisateur.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($updatedRequest);
 
+            // If the Request object updated with the received request does not match with constraints validation : send the error(s)
             if (count($errors) > 0) {
-
+                // Making an array like : ["name of the property" => "the error message that corresponds to this property"]
                 $newErrors = [];
-
+                
                 foreach ($errors as $error) {
                     $newErrors[$error->getPropertyPath()][] = $error->getMessage();
                 }
@@ -118,11 +119,13 @@ class RequestController extends AbstractController
             }
 
             $em->flush();
-            // dd($updatedRequest);
+
+            // If the request is of type "game" : call the servive "responseHandler" with method "handleGameReqest"
             if($entityRequest->getType() === "game") {
                 $updatedFriendship = $responseHandler->handleGameRequest($updatedRequest);
                 return $this->json($updatedFriendship, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
             }
+            // If the request is of type "friend" : call the servive "responseHandler" with method "handleFriendReqest"
             if($entityRequest->getType() === "friend") {
                 $newFriendship = $responseHandler->handleFriendRequest($updatedRequest);
                 return $this->json($newFriendship, Response::HTTP_CREATED, [], ['groups' => 'user_info']);

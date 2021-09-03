@@ -17,11 +17,13 @@ class FriendshipController extends AbstractController
      */
     public function deleteFriendship(Friendship $friendship = null, FriendshipRepository $friendshipRepository, EntityManagerInterface $em): Response
     {
+        //If the relation does not exists : send an error
         if (null === $friendship) {
             $error = 'Cette relation n\'existe pas';
             return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
         }
 
+        //If the connected user is the user in the relationship
         if ($friendship->getUser() === $this->getUser()) {
 
             $friendshipReverse = $friendshipRepository->findOneByUserAndFriend($friendship->getFriend(),$friendship->getUser());
@@ -33,6 +35,7 @@ class FriendshipController extends AbstractController
             return $this->json(['message' => 'La relation a bien été supprimée.'], Response::HTTP_OK);
         }
 
+        // Else return an error because not authorized
         return $this->json([], Response::HTTP_FORBIDDEN);
     }
 }
