@@ -52,8 +52,11 @@ class MoodController extends AbstractController
     /**
      * @Route("/{id}", name="mood_show", methods={"GET"})
      */
-    public function show(Mood $mood): Response
+    public function show(Mood $mood = null): Response
     {
+        if( $mood === null) {
+            return $this->redirectToRoute('back_error');
+        }
         return $this->render('mood/show.html.twig', [
             'mood' => $mood,
         ]);
@@ -62,8 +65,11 @@ class MoodController extends AbstractController
     /**
      * @Route("/{id}/edit", name="mood_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Mood $mood): Response
+    public function edit(Request $request, Mood $mood = null): Response
     {
+        if( $mood === null) {
+            return $this->redirectToRoute('back_error');
+        }
         $form = $this->createForm(MoodType::class, $mood);
         $form->handleRequest($request);
 
@@ -83,8 +89,11 @@ class MoodController extends AbstractController
     /**
      * @Route("/{id}", name="mood_delete", methods={"POST"})
      */
-    public function delete(Request $request, Mood $mood): Response
+    public function delete(Request $request, Mood $mood = null): Response
     {
+        if( $mood === null) {
+            return $this->redirectToRoute('back_error');
+        }
         if ($this->isCsrfTokenValid('delete'.$mood->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($mood);
