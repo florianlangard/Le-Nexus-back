@@ -26,13 +26,21 @@ class AuthenticationSuccessListener
         $this->steamApi->updateUserInfo(($event->getUser()));
 
         if (!$event->getUser()->getVisibilityState()) {
-            $notice = 'Your Steam account is private. We could not updated your Nexus infos';
+            $notice = 'Votre compte est privé. Nous n\'avons pas pu mettre à jour vos informations Nexus.';
         }
         else {
-            $notice = 'Update OK';
-            
-            $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
-            $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
+            $successOnGames   = $this->steamApi->fetchGamesInfo(strval($event->getUser()->getSteamId()));
+            $successOnFriends = $this->steamApi->fetchFriendsInfo(strval($event->getUser()->getSteamId()));
+
+            if ($successOnGames && $successOnFriends) {
+                $notice = 'Mise à jour : OK';
+            }
+            elseif (!$successOnGames){
+                $notice = "Désolé, nous n'avons pas pu mettre à jour vos jeux. Veuillez reessayer plus tard.";
+            }
+            else {
+                $notice = "Désolé, nous n'avons pas pu mettre votre liste d'amis à jour. Veuillez reessayer plus tard";
+            }          
         }
 
         $event->setData([

@@ -97,7 +97,13 @@ class steamApi
 
         $content = $response->toArray();
 
-        $games = $content["response"]["games"];
+        if ($content["response"]["games"]) {
+            $games = $content["response"]["games"];
+        }
+        else {
+            return false;
+        }
+        
 
         foreach($games as $currentGame){
             if (!$this->gameRepository->findOneBy(['appid' => $currentGame['appid']])){
@@ -139,6 +145,8 @@ class steamApi
             //     return 'ok';
             // }
         }
+
+        return true;
     }
 
     public function fetchFriendsInfo($steamId)
@@ -149,7 +157,13 @@ class steamApi
 
         $content = $response->toArray();
 
-        $friends = $content["friendslist"]["friends"];
+        if ($content["friendslist"]["friends"]) {
+            $friends = $content["friendslist"]["friends"];
+        }
+        else {
+            return false;
+        }
+        
 
         // dd($friends);
         // dd($this->userRepository->findOneBy(['steamId' => $friends[1]['steamid'] ]));
@@ -183,5 +197,7 @@ class steamApi
                 $this->em->flush();
             }
         }
+
+        return true;
     }
 }

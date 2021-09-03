@@ -153,8 +153,20 @@ class UserController extends AbstractController
 
         // If the Steam profile is public : calling the others methods of the service "steamApi" to get Steam games and Steam friends
         if($notice === null){
-            $steamApi->fetchGamesInfo($user->getSteamId());
-            $steamApi->fetchFriendsInfo($user->getSteamId());
+            // $steamApi->fetchGamesInfo($user->getSteamId());
+            // $steamApi->fetchFriendsInfo($user->getSteamId());
+            $successOnGames   = $this->steamApi->fetchGamesInfo(strval($user->getSteamId()));
+            $successOnFriends = $this->steamApi->fetchFriendsInfo(strval($user->getSteamId()));
+
+            if ($successOnGames && $successOnFriends) {
+                $notice = 'Mise à jour : OK';
+            }
+            elseif (!$successOnGames){
+                $notice = "Désolé, nous n'avons pas pu mettre à jour vos jeux. Veuillez reessayer plus tard.";
+            }
+            else {
+                $notice = "Désolé, nous n'avons pas pu mettre votre liste d'amis à jour. Veuillez reessayer plus tard";
+            }
         }
 
         return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
