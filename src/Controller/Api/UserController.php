@@ -24,16 +24,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
-    // /**
-    //  * @Route("/api/users", name="api_users_get", methods="GET")
-    //  */
-    // public function browse(UserRepository $userRepository): Response
-    // {
-    //     $users = $userRepository->findAll();
-       
-    //     return $this->json($users, Response::HTTP_OK, [], ['groups' => 'user_info']);
-    // }
-
     /**
      * @Route("/api/users/pseudo/{searching}", name="api_users_get_collection", methods="GET")
      */
@@ -49,27 +39,27 @@ class UserController extends AbstractController
      */
     public function read(User $user): Response
     {  
-        foreach ($this->getUser()->getFriends() as $currentFriendship) {
+        // Setting by default a varaiable "allowed" to false
+        $allowed = false;
 
+        // If the request is made by the actual connected user or one of his friends : set "allowed" to true
+        foreach ($user->getFriends() as $currentFriendship) {
             $currentfriend = $currentFriendship->getFriend();
-
-            if ($user === $this->getUser() || $user === $currentfriend) {
-                return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+            if ($user === $this->getUser() || $this->getUser() === $currentfriend) {
+                $allowed = true;
             }
+        }
+
+        // If the connected user is allowed : send the infos of the requested user
+        if ($allowed) {
+            return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+        }
+        // If the connected user is not allowed : send an errors
+        else {
             return $this->json([], Response::HTTP_FORBIDDEN);
         }
-        return $this->json($user, Response::HTTP_OK, [], ['groups' => 'user_info']);
+        
     }
-
-    // /**
-    //  * @Route("/api/users/{id<\d+>}/games", name="api_users_get_games", methods="GET")
-    //  */
-    // public function readGamesByUser(User $user, GameRepository $gameRepository): Response
-    // {
-    //     $games = $gameRepository->findBy($user);
-       
-    //     return $this->json($games, Response::HTTP_OK, [], ['groups' => 'game_info']);
-    // }
 
     /**
      * @Route("/api/users/{steamId<\d+>}/mood", name="api_users_get_mood", methods="GET")
@@ -95,7 +85,9 @@ class UserController extends AbstractController
 
             $friends = [];
 
-            foreach ($user->getFriends() as $currentFriendship){
+            // Add to array "friends" each User object that are at the property "friend" of the friendships of the connected user
+            // In other words : replacing Friendship object by User object at the property "friends" of the connected user and return this property filled with Users
+            foreach ($user->getFriends() as $currentFriendship) {
                 $friend = $userRepository->find($currentFriendship->getFriend());
                 $friends[] = $friend;
             }
@@ -132,40 +124,38 @@ class UserController extends AbstractController
         $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
         $user->setPassword($hashedPassword);
 
+        // Calling the servive "steamApi" to get the Steam infos of the user
         $userSteamInfos = $steamApi->fetchUserInfo($user->getSteamId());
 
+        // Set the infos returned by the service to the user
         $user->setSteamUsername($userSteamInfos["personaname"]);
         $user->setSteamAvatar($userSteamInfos["avatarfull"]);
         $user->setVisibilityState($userSteamInfos["communityvisibilitystate"]);
         
-        // If the Steam profile is not set to public
+        // If the Steam profile is not set to public : create the corresponding message in "notice"
         if (!$user->getVisibilityState()){
 
             $notice = "votre, compte Steam n'est pas en publique";
         }
-        // If the Steam profile is public, we search for user's games and user's friends
+        // If the Steam profile is public, we search for user's games and user's friends : set "notice" to null
         else {
-            // $steamApi->fetchGamesInfo($user->getSteamId());
-            // $steamApi->fetchFriendsInfo($user->getSteamId());
             $notice = null;
         }
 
         $errors = $validator->validate($user);
-
+        // If the User object filled with the received request does not match with constraints validation : send the error(s)
         if (count($errors) > 0) {
-            // $errorsString = (string) $errors;
             return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         
         $entityManager->persist($user);
         $entityManager->flush();
 
+        // If the Steam profile is public : calling the others methods of the service "steamApi" to get Steam games and Steam friends
         if($notice === null){
             $steamApi->fetchGamesInfo($user->getSteamId());
             $steamApi->fetchFriendsInfo($user->getSteamId());
         }
-
-        // dd($user);
 
         return $this->json(['user' => $user, 'notice' => $notice], Response::HTTP_CREATED, [], ['groups' => 'user_info', 'user_friends']);
     }
@@ -182,18 +172,20 @@ class UserController extends AbstractController
             
             $content = $request->toArray();
             
+            // If the password is changed : hash it
             if (array_key_exists('password', $content)) {
                 $hashedPassword = $userPasswordHasher->hashPassword($userUpdated, $userUpdated->getPassword());
                 $userUpdated->setPassword($hashedPassword);
             }
-
+            // If the role is changed : send an error
             if (array_key_exists('roles', $content)) {
                 return $this->json('You are not allowed to change your role', Response::HTTP_FORBIDDEN);
             }
             
             $errors = $validator->validate($userUpdated);
-            
+            // If the User object filled with the received request does not match with constraints validation : send the error(s)
             if (count($errors) > 0) {
+                // Making an array like : ["name of the property" => "the error message that corresponds to this property"]
                 $newErrors = [];
                 
                 foreach ($errors as $error) {
@@ -209,6 +201,7 @@ class UserController extends AbstractController
             return $this->json($userUpdated, Response::HTTP_ACCEPTED, [], ['groups' => 'user_info']);
             
         }
+
         return $this->json([], Response::HTTP_FORBIDDEN);
     }
         
@@ -218,10 +211,9 @@ class UserController extends AbstractController
         public function delete(User $user, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
     {
         if ($user === $this->getUser()) {
-            
-            
+            // Finding the reverse friendships involving the user...    
             $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
-            
+            // ... and delete them as well
             foreach ($friendshipsReverse as $currentFriendshipReverse) {
                 $em->remove($currentFriendshipReverse);
             }
@@ -233,28 +225,5 @@ class UserController extends AbstractController
         }
         
         return $this->json([], Response::HTTP_FORBIDDEN);
-
     }
-
-    // /**
-    //  * @Route("/api/users/{id<\d+>}", name="api_users_delete", methods="DELETE")
-    //  */
-    // public function delete(User $user = null, FriendshipRepository $friendshipRepository, EntityManagerInterface $em)
-    // {
-    //     if (null === $user) {
-    //         $error = 'Cet utilisateur n\'existe pas';
-    //         return $this->json(['error' => $error], Response::HTTP_NOT_FOUND);
-    //     }
-
-    //     $friendshipsReverse = $friendshipRepository->findBy(['friend' => $user]);
-
-    //     foreach ($friendshipsReverse as $currentFriendshipReverse) {
-    //         $em->remove($currentFriendshipReverse);
-    //     }
-        
-    //     $em->remove($user);
-    //     $em->flush();
-
-    //     return $this->json(['message' => 'L\'utilisateur a bien été supprimé.'], Response::HTTP_OK);
-    // }
 }
