@@ -39,7 +39,7 @@ class UserController extends AbstractController
      */
     public function read(User $user): Response
     {  
-        // Setting by default a varaiable "allowed" to false
+        // Setting by default a variable "allowed" to false
         $allowed = false;
 
         // If the request is made by the actual connected user or one of his friends : set "allowed" to true
@@ -135,7 +135,7 @@ class UserController extends AbstractController
         // If the Steam profile is not set to public : create the corresponding message in "notice"
         if (!$user->getVisibilityState()){
 
-            $notice = "votre, compte Steam n'est pas en publique";
+            $notice = "Votre compte Steam n'est pas public.";
         }
         // If the Steam profile is public, we search for user's games and user's friends : set "notice" to null
         else {

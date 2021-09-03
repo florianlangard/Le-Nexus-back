@@ -6,7 +6,6 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FriendshipRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass=FriendshipRepository::class)

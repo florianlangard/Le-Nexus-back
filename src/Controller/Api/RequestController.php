@@ -39,7 +39,7 @@ class RequestController extends AbstractController
             }
             // If the user already sent an invitation to this user : send an error
             if ($requestRepository->findOneBySenderAndTarget($this->getUser(), $newRequest->getTarget())) {
-                return $this->json('Vous avez déjà envoyé une invitation à cette utilisateur.', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous avez déjà envoyé une invitation à cet utilisateur.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
@@ -59,15 +59,15 @@ class RequestController extends AbstractController
 
             // If the user connected has not in his frendslist the target of the request : send an error
             if (!$friendshipRepository->findOneByUserAndFriend($this->getUser(), $newRequest->getTarget())) {
-                return $this->json('Vous devez être ami avec cette utilisateur pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous devez être ami avec cet utilisateur pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
             // If the user connected has not the game in his library : send an error
             if (!$libraryRepository->findOneByGameAndUser($newRequest->getGame(), $this->getUser())) {
-                return $this->json('Vous devez avoir ce jeu dans votre librairie pour envoyer une invitation.', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous devez avoir ce jeu dans votre bibliothèque pour envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
             // If the target of the request has not the game in his library : send an error
             if (!$libraryRepository->findOneByGameAndUser($newRequest->getGame(), $newRequest->getTarget())) {
-                return $this->json('Votre ami doit avoir ce jeu dans sa librairie pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
+                return $this->json('Votre ami doit avoir ce jeu dans sa bibliothèque pour lui envoyer une invitation.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($newRequest);
@@ -101,7 +101,7 @@ class RequestController extends AbstractController
 
             // If the user connected has already in his frendslist the user who sent the request : send an error
             if ($friendshipRepository->findOneByUserAndFriend($this->getUser(), $updatedRequest->getSender())) {
-                return $this->json('Vous êtes déjà ami avec cette utilisateur.', Response::HTTP_FORBIDDEN);
+                return $this->json('Vous êtes déjà ami avec cet utilisateur.', Response::HTTP_FORBIDDEN);
             }
 
             $errors = $validator->validate($updatedRequest);
