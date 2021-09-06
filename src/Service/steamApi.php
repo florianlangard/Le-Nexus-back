@@ -154,7 +154,10 @@ class steamApi
         $response = $this->client->request(
             'GET',
             'https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=8042AD2C22CFB15EE1A668BACFEB5D27&steamid='.$steamId.'&relationship=friend');
-
+            
+            if ($response->getStatusCode() === 401){
+                return false;
+            }
         $content = $response->toArray();
 
         if (array_key_exists("friends", $content["friendslist"])) {
