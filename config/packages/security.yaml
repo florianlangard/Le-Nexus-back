@@ -54,8 +54,8 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/users, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: POST }
         # - { path: ^/api/users, roles: ROLE_USER, methods: GET }
-        # - { path: ^/api/users, roles: ROLE_ADMIN, methods: GET }
-        # - { path: ^/api/request, roles: ROLE_USER, methods: POST }
+        - { path: ^/api/users, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: GET }
+        - { path: ^/api/request, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: POST }
         - { path: ^/back, roles: ROLE_ADMIN }
 
     role_hierarchy:
