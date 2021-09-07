@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Request index{% endblock %}
+
+{% block body %}
+    <h1>Request index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>sender pseudo</th>
+                <th>target pseudo</th>
+                <th>Type</th>
+                <th>CreatedAt</th>
+                <th>AcceptedAt</th>
+                <th>DeclinedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for request in requests %}
+            <tr>
+                <td>{{ request.id }}</td>
+                <td>{{ request.sender.pseudo }}</td>
+                <td>{{ request.target.pseudo }}</td>
+                <td>{{ request.type }}</td>
+                <td>{{ request.createdAt ? request.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ request.acceptedAt ? request.acceptedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ request.declinedAt ? request.declinedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    {{ include('back/request/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
