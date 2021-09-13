@@ -16,11 +16,11 @@ class Mailing
         $this->mailer = $mailer;
     }
 
-    public function sendConfirmationEmail()
+    public function sendConfirmationEmail($target)
     {
         $email = (new TemplatedEmail())
         ->from('hello@nexus.com')
-        ->to(new Address('test@test.com'))
+        ->to(new Address($target))
         ->subject('Bienvenue sur Le Nexus!')
         ->htmlTemplate('mailer/signup.html.twig');
 

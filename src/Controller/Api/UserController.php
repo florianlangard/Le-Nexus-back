@@ -164,7 +164,8 @@ class UserController extends AbstractController
         $entityManager->flush();
 
         // Sending confirmation email for account creation
-        $mailing->sendConfirmationEmail();
+        $userMail = $user->getEmail();
+        $mailing->sendConfirmationEmail($userMail);
 
         // If the Steam profile is public : calling the others methods of the service "steamApi" to get Steam games and Steam friends
         if($notice === null){
