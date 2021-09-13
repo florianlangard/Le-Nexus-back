@@ -10,6 +10,7 @@ use App\Repository\MoodRepository;
 use App\Repository\UserRepository;
 use App\Repository\RequestRepository;
 use App\Repository\FriendshipRepository;
+use App\Service\Mailing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -119,7 +120,14 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users", name="api_users_add", methods="POST")
      */
-    public function add(steamApi $steamApi, Request $request, UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function add(
+        steamApi $steamApi, 
+        Request $request, 
+        UserPasswordHasherInterface $userPasswordHasher, 
+        SerializerInterface $serializer, 
+        EntityManagerInterface $entityManager, 
+        ValidatorInterface $validator,
+        Mailing $mailing)
     {
         $jsonContent = $request->getContent();
 
@@ -154,6 +162,9 @@ class UserController extends AbstractController
         
         $entityManager->persist($user);
         $entityManager->flush();
+
+        // Sending confirmation email for account creation
+        $mailing->sendConfirmationEmail();
 
         // If the Steam profile is public : calling the others methods of the service "steamApi" to get Steam games and Steam friends
         if($notice === null){
