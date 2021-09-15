@@ -28,4 +28,21 @@ class Mailing
 
         return true;
     }
+
+    public function sendContactEmail($sender, $content)
+    {
+        $email = (new TemplatedEmail())
+        ->from($sender)
+        ->to(new Address('nexuscontact@gmail.com'))
+        ->subject('formulaire de contact : '. $sender)
+        ->htmlTemplate('mailer/contact.html.twig')
+        ->context([
+            'sender' => $sender,
+            'content' => $content
+        ]);
+
+        $this->mailer->send($email);
+
+        return true;
+    }
 }
