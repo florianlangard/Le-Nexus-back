@@ -19,7 +19,7 @@ class Mailing
     public function sendConfirmationEmail($target)
     {
         $email = (new TemplatedEmail())
-        ->from('hello@nexus.com')
+        ->from('officialnexuscontact@gmail.com')
         ->to(new Address($target))
         ->subject('Bienvenue sur Le Nexus!')
         ->htmlTemplate('mailer/signup.html.twig');
@@ -33,7 +33,7 @@ class Mailing
     {
         $email = (new TemplatedEmail())
         ->from($sender)
-        ->to(new Address('nexuscontact@gmail.com'))
+        ->to(new Address('officialnexuscontact@gmail.com'))
         ->subject('formulaire de contact : '. $sender)
         ->htmlTemplate('mailer/contact.html.twig')
         ->context([
