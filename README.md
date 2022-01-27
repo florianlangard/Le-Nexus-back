@@ -1,36 +1,18 @@
-# Installation en local
+# Le Nexus
 
-## Récupération et installation du projet
+Repo du projet de fin de formation Le Nexus, plateforme de mise en relation d'utilisateurs Steam
+pour filtrer et retrouver ses amis facilement et efficacement en fonction de sa liste de jeux possédés.
 
-D'abord, un petit ```git clone``` à partir d'[ici](https://github.com/O-clock-Trinity/projet-le-nexus-back).
+Pour ce back-end, nous avons utilisé :
 
-A la racine du projet, ```composer install``` dans un terminal.
+* Symfony
 
-## Création du fichier d'environnement local
+Pour la partie Back-office du site:
 
-A la racine du projet, créer un fichier nommé ```.env.local```
+* Twig
+* Bootstrap
 
-Y coller cette ligne:
-```DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"```
+Toutes les données utilisateurs sont récupérées via l'[API Steam](https://steamcommunity.com/dev) grâce au SteamID,
+identifiant requis à l'inscription.
 
-Remplacer ```db_user``` et ```db_password``` par votre identifiant et mot de passe adminer.(créer si besoin un utilisateur dans votre adminer au préalable).
-
-Remplacer ```db_name``` par le nom que vous donnerez à votre BDD.
-
-## Le terminal, c'est génial
-
-A la racine du projet, ouvrir un terminal.
-
-Lancer successivement les commandes:
-
-```bin/console d:d:c```
-
-```bin/console d:m:m```
-
-```bin/console lexik:jwt:generate-keypair```
-
-le projet back est prêt, ne reste qu'à lancer un serveur de développement:
-
-```php -S localhost:8000 -t public```
-
-***Et Voilà!***
+La démo en live est disponible [ici](https://youtu.be/vfZ4V3Wco-Y?t=4053), présenté par François :clap:
